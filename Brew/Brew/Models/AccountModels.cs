@@ -16,6 +16,7 @@ namespace Brew.Models
         }
 
         public DbSet<UserProfile> UserProfiles { get; set; }
+        public DbSet<Hop> Hops { get; set; }
     }
 
     [Table("UserProfile")]
@@ -25,6 +26,7 @@ namespace Brew.Models
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int UserId { get; set; }
         public string UserName { get; set; }
+        public string Email { get; set; }
     }
 
     public class RegisterExternalLoginModel

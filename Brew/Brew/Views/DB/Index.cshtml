@@ -1,0 +1,19 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<hgroup class="title">
+    <h1>@ViewBag.Title.</h1>
+    <h2>@ViewBag.Message</h2>
+</hgroup>
+
+<article>
+    <p>
+        Caleb HATE MVC ASP.
+    </p>
+</article>
+
+@using (Html.BeginForm("Generate", "DB"))
+{
+    <button type="submit">OK</button>
+}
