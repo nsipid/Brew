@@ -293,11 +293,186 @@ namespace Brew.Controllers
             }
         }
 
+        public void ParseStyleXML(string fileLocation)
+        {
+            XmlTextReader reader = new XmlTextReader(fileLocation);
+            var currentNodeName = "";
+            Models.Style style = null;
+            while (reader.Read())
+            {
+                switch (reader.NodeType)
+                {
+                    case XmlNodeType.Element: // The node is an element.
+                        currentNodeName = reader.Name;
+                        if (currentNodeName == "STYLE")
+                        {
+                            style = new Models.Style();
+                        }
+                        break;
+                    case XmlNodeType.Text:
+                        if (style == null)
+                        {
+                            break;
+                        }
+                        switch (currentNodeName)
+                        {
+                            case "NAME":
+                                style.Name = reader.Value;
+                                break;
+                            case "CATEGORY":
+                                style.Category = reader.Value;
+                                break;
+                            case "CATEGORY_NUMBER":
+                                style.CategoryNumber = reader.Value;
+                                break;
+                            case "STYLE_LETTER":
+                                style.StyleLetter = reader.Value;
+                                break;
+                            case "STYLE_GUIDE":
+                                style.StyleGuide = reader.Value;
+                                break;
+                            case "TYPE":
+                                style.StyleType = Models.StyleUtils.getStyleType(reader.Value);
+                                break;
+                            case "OG_MIN":
+                                style.OGMin = float.Parse(reader.Value);
+                                break;
+                            case "OG_MAX":
+                                style.OGMax = float.Parse(reader.Value);
+                                break;
+                            case "FG_MIN":
+                                style.FGMin = float.Parse(reader.Value);
+                                break;
+                            case "FG_MAX":
+                                style.FGMax = float.Parse(reader.Value);
+                                break;
+                            case "IBU_MIN":
+                                style.IBUMin = float.Parse(reader.Value);
+                                break;
+                            case "IBU_MAX":
+                                style.IBUMax = float.Parse(reader.Value);
+                                break;
+                            case "COLOR_MIN":
+                                style.ColorMin = float.Parse(reader.Value);
+                                break;
+                            case "COLOR_MAX":
+                                style.ColorMax = float.Parse(reader.Value);
+                                break;
+                            case "ABV_MIN":
+                                style.ABVMin = float.Parse(reader.Value);
+                                break;
+                            case "ABV_MAX":
+                                style.ABVMax = float.Parse(reader.Value);
+                                break;
+                            case "CARB_MIN":
+                                style.CRABMin = float.Parse(reader.Value);
+                                break;
+                            case "CARB_MAX":
+                                style.CRABMax = float.Parse(reader.Value);
+                                break;
+                            case "NOTES":
+                                style.Notes = reader.Value;
+                                break;
+                            case "PROFILE":
+                                style.Profile = reader.Value;
+                                break;
+                            case "INGREDIENTS":
+                                style.Ingredients = reader.Value;
+                                break;
+                            case "EXAMPLES":
+                                style.Eamples = reader.Value;
+                                break;
+                        }
+                        break;
+                    case XmlNodeType.EndElement:
+                        if (reader.Name == "STYLE" && style != null)
+                        {
+                            using (var context = new Models.UsersContext())
+                            {
+                                context.Styles.Add(style);
+                                context.SaveChanges();
+                            }
+                            style = null;
+                        }
+                        break;
+                }
+            }
+        }
+
+        public void ParseMashStepsXML(string fileLocation)
+        {
+            XmlTextReader reader = new XmlTextReader(fileLocation);
+            var currentNodeName = "";
+            Models.MashStep mashStep = null;
+            while (reader.Read())
+            {
+                switch (reader.NodeType)
+                {
+                    case XmlNodeType.Element: // The node is an element.
+                        currentNodeName = reader.Name;
+                        if (currentNodeName == "MASH_STEP")
+                        {
+                            mashStep = new Models.MashStep();
+                        }
+                        break;
+                    case XmlNodeType.Text:
+                        if (mashStep == null)
+                        {
+                            break;
+                        }
+                        switch (currentNodeName)
+                        {
+                            case "NAME":
+                                mashStep.Name = reader.Value;
+                                break;
+                            case "TYPE":
+                                mashStep.MashStepType = Models.MashStepUtils.getMashStepType(reader.Value);
+                                break;
+                            case "INFUSE_AMOUNT":
+                                mashStep.InfuseAmount = float.Parse(reader.Value);
+                                break;
+                            case "STEP_TEMP":
+                                mashStep.StepTemp = float.Parse(reader.Value);
+                                break;
+                            case "STEP_TIME":
+                                mashStep.StepTime = float.Parse(reader.Value);
+                                break;
+                            case "RAMP_TIME":
+                                mashStep.RampTime = float.Parse(reader.Value);
+                                break;
+                            case "END_TEMP":
+                                mashStep.EndTemp = float.Parse(reader.Value);
+                                break;
+                            case "INFUSE_TEMP":
+                                mashStep.InfuseTemp = float.Parse(reader.Value);
+                                break;
+                            case "DECOCTION_AMOUNT":
+                                mashStep.DecoctionAmount = float.Parse(reader.Value);
+                                break;                            
+                        }
+                        break;
+                    case XmlNodeType.EndElement:
+                        if (reader.Name == "MASH_STEP" && mashStep != null)
+                        {
+                            using (var context = new Models.UsersContext())
+                            {
+                                context.MashSteps.Add(mashStep);
+                                context.SaveChanges();
+                            }
+                            mashStep = null;
+                        }
+                        break;
+                }
+            }
+        }
+
         public ActionResult Generate()
         {
             // ParseHopXML("C:\\Projects\\Brew\\BeerXML\\Hops.xml");
             // ParseYeastXML("C:\\Projects\\Brew\\BeerXML\\Yeast.xml");
             // ParseFermentableXML("C:\\Projects\\Brew\\BeerXML\\Fermentables.xml");
+            //ParseStyleXML("C:\\Projects\\Brew\\BeerXML\\btrecipes.xml");
+            ParseMashStepsXML("C:\\Projects\\Brew\\BeerXML\\btrecipes.xml");
             ViewBag.Message = "Record Inserted";
             return View();
         }

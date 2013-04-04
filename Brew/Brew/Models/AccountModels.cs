@@ -18,7 +18,11 @@ namespace Brew.Models
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<Hop> Hops { get; set; }
         public DbSet<Yeast> Yeasts { get; set; }
-        public DbSet<Fermentable> Fermentables { get; set; }        
+        public DbSet<Fermentable> Fermentables { get; set; }
+        public DbSet<Style> Styles { get; set; }
+        public DbSet<MashStep> MashSteps { get; set; }
+        public DbSet<MashProfile> MashProfiles { get; set; }
+        public DbSet<Recipe> Recipes { get; set; }   
     }
 
     [Table("UserProfile")]
