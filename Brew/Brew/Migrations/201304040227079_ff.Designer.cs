@@ -5,13 +5,13 @@ namespace Brew.Migrations
     using System.Data.Entity.Migrations.Infrastructure;
     using System.Resources;
     
-    public sealed partial class r : IMigrationMetadata
+    public sealed partial class ff : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(r));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(ff));
         
         string IMigrationMetadata.Id
         {
-            get { return "201304030311159_r"; }
+            get { return "201304040227079_ff"; }
         }
         
         string IMigrationMetadata.Source

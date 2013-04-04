@@ -168,13 +168,16 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201304030311159_r.cs" />
-    <Compile Include="Migrations\201304030311159_r.Designer.cs">
-      <DependentUpon>201304030311159_r.cs</DependentUpon>
+    <Compile Include="Migrations\201304040227079_ff.cs" />
+    <Compile Include="Migrations\201304040227079_ff.Designer.cs">
+      <DependentUpon>201304040227079_ff.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountModels.cs" />
+    <Compile Include="Models\FermentableModels.cs" />
+    <Compile Include="Models\HopModels.cs" />
     <Compile Include="Models\Models.cs" />
+    <Compile Include="Models\YeastModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -298,8 +301,8 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201304030311159_r.resx">
-      <DependentUpon>201304030311159_r.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201304040227079_ff.resx">
+      <DependentUpon>201304040227079_ff.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
