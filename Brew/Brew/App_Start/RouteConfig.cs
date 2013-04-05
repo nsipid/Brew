@@ -14,9 +14,16 @@ namespace Brew
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
+                "PrettyRecipeDetails",
+                "Recipes/{Id}",
+                new { action = "Show", controller = "Recipes" },
+                new { Id = @"\d+" }
+            );
+
+            routes.MapRoute(
                 name: "Default",
-                url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+                url: "{controller}/{action}",
+                defaults: new { controller = "Recipes", action = "List" }
             );
         }
     }

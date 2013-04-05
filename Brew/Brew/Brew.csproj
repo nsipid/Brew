@@ -162,15 +162,14 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\BeerImageController.cs" />
     <Compile Include="Controllers\DBController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\IngredientsController.cs" />
+    <Compile Include="Controllers\RecipesController.cs" />
     <Compile Include="Filters\InitializeSimpleMembershipAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201304042232298_a.cs" />
-    <Compile Include="Migrations\201304042232298_a.Designer.cs">
-      <DependentUpon>201304042232298_a.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountModels.cs" />
@@ -182,6 +181,16 @@
     <Compile Include="Models\StyleModels.cs" />
     <Compile Include="Models\YeastModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\BaseLayoutViewModel.cs" />
+    <Compile Include="ViewModels\Ingredients\FermentableViewModel.cs" />
+    <Compile Include="ViewModels\Ingredients\HopViewModel.cs" />
+    <Compile Include="ViewModels\Ingredients\IngredientViewModel.cs" />
+    <Compile Include="ViewModels\PagedList.cs" />
+    <Compile Include="ViewModels\Recipes\BeerSummaryViewModel.cs" />
+    <Compile Include="ViewModels\Recipes\CommentsRecipeViewModel.cs" />
+    <Compile Include="ViewModels\Recipes\DetailRecipeViewModel.cs" />
+    <Compile Include="ViewModels\Recipes\RecipesViewModel.cs" />
+    <Compile Include="ViewModels\Recipes\RecipeViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
@@ -241,6 +250,7 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
+    <Content Include="Images\logo.png" />
     <Content Include="Scripts\jquery-1.7.1.js" />
     <Content Include="Scripts\jquery-1.7.1.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
@@ -267,16 +277,6 @@
     <Content Include="Images\accent.png" />
     <Content Include="Images\bullet.png" />
     <Content Include="Images\heroAccent.png" />
-    <Content Include="Images\orderedList0.png" />
-    <Content Include="Images\orderedList1.png" />
-    <Content Include="Images\orderedList2.png" />
-    <Content Include="Images\orderedList3.png" />
-    <Content Include="Images\orderedList4.png" />
-    <Content Include="Images\orderedList5.png" />
-    <Content Include="Images\orderedList6.png" />
-    <Content Include="Images\orderedList7.png" />
-    <Content Include="Images\orderedList8.png" />
-    <Content Include="Images\orderedList9.png" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Account\_ChangePasswordPartial.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
@@ -296,17 +296,25 @@
     <Content Include="Views\Web.config" />
     <Content Include="Views\DB\Index.cshtml" />
     <Content Include="Views\DB\Generate.cshtml" />
+    <Content Include="Views\Ingredients\Create.cshtml" />
+    <Content Include="Views\Ingredients\DisplayTemplates\HopViewModel.cshtml" />
+    <Content Include="Views\Ingredients\EditorTemplates\HopViewModel.cshtml" />
+    <Content Include="Views\Ingredients\List.cshtml" />
+    <Content Include="Views\Ingredients\Show.cshtml" />
+    <Content Include="Views\Ingredients\Update.cshtml" />
+    <Content Include="Views\Recipes\Create.cshtml" />
+    <Content Include="Views\Recipes\DisplayTemplates\CommentsRecipeViewModel.cshtml" />
+    <Content Include="Views\Recipes\DisplayTemplates\DetailRecipeViewModel.cshtml" />
+    <Content Include="Views\Recipes\EditorTemplates\DetailRecipeViewModel.cshtml" />
+    <Content Include="Views\Recipes\List.cshtml" />
+    <Content Include="Views\Recipes\Show.cshtml" />
+    <Content Include="Views\Recipes\Update.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201304042232298_a.resx">
-      <DependentUpon>201304042232298_a.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

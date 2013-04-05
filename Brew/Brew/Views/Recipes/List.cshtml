@@ -1,0 +1,72 @@
+﻿@model Brew.ViewModels.Recipes.RecipesViewModel
+
+@helper BuildTab(string tabName, string sortby)
+{
+    if (String.Compare(sortby, Model.SortBy, true) == 0)
+    {
+        @Html.ActionLink(tabName, "List", new { sortby = sortby }, new { Id = "current" });
+    }
+    else
+    {
+        @Html.ActionLink(tabName, "List", new { sortby = sortby });
+    }
+}
+
+@section sortRecipes {
+    <nav>
+        <ul class="sortRecipes">
+            <li>Recipes</li>
+            <li>@BuildTab("Hoppin'", "hoppin")</li>
+            <li>@BuildTab("Top", "top")</li>
+            <li>@BuildTab("Fresh", "newest")</li>
+        </ul>
+    </nav>
+}
+
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Ratings</th>
+            <th scope="col">Preview</th>
+            <th scope="col">Name</th>
+            <th scope="col">Style</th>
+            <th scope="col">ABV</th>
+            <th scope="col">Color</th>
+            <th scope="col">Users</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var beer in Model.Beers.CurrentPage)
+        {
+            <tr>
+                <td>
+                    <div class="ratings">
+                        <div class="rating">
+                            @Html.Encode(beer.SiteRating + "/ 10");
+                        </div>
+                        <div>site</div>
+                        <div class="rating">
+                            @Html.Encode(beer.AvgRating + "/ 10");
+                        </div>
+                        <div>avg</div>
+                    </div>
+                </td>
+                <td><img src="@Url.Action("Index", "BeerImage", new { id = beer.Id })"/></td>
+                <td>@Html.ActionLink(beer.Name, "Show", "Recipes", new {id = beer.Id}, null)</td>
+                <td>@beer.Style</td>
+                <td>@beer.Abv%</td>
+                <td>@{@beer.Color}L</td>
+                <td>@beer.User</td>
+            </tr>
+        }
+    </tbody>
+</table>
+@if (Model.Beers.HasPreviousPage)
+{
+    @Html.ActionLink("<<", "List", "Recipes", new { pageno = Model.Beers.CurrentPageNumber - 1, sortby = Model.SortBy }, null);
+}
+@if (Model.Beers.HasNextPage)
+{
+    @Html.ActionLink(">>", "List", "Recipes", new { pageno = Model.Beers.CurrentPageNumber + 1, sortby = Model.SortBy }, null);
+}
+

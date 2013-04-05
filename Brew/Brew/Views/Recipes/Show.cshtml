@@ -1,0 +1,14 @@
+﻿@model Brew.ViewModels.Recipes.RecipeViewModel
+
+@section sortRecipes {
+    <nav>
+        <ul class="sortRecipes">
+            <li>@Model.BeerName</li>
+            <li id="current">@Html.ActionLink("Details", "Show", new {Id = Model.BeerId}, null)</li>
+            <li>@Html.ActionLink("Comments", "Show", new {Id = Model.BeerId}, null)</li>
+         </ul>
+    </nav>
+}
+
+@Html.DisplayForModel()
+@Html.ActionLink("Edit", "Update", new { id = Model.BeerId }, null)

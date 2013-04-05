@@ -1,0 +1,47 @@
+﻿@model Brew.ViewModels.Recipes.DetailRecipeViewModel
+
+@section scripts{
+    <script type="text/javascript">
+ 
+        $.ajaxSetup({ cache: false });
+ 
+        $(document).ready(function () {
+            $(".openNewHop").on("click", function (e) {
+                e.preventDefault();
+ 
+                $("<div></div>")
+                    .addClass("newHop")
+                    .attr("id", $(this).attr("data-newHop-id"))
+                    .appendTo("body")
+                    .dialog({
+                        title: $(this).attr("data-newHop-title"),
+                        close: function () { $(this).remove() },
+                        modal: true
+                    })
+                    .load(this.href);
+            });
+ 
+            $(".closeNewHop").on("click", function (e) {
+                e.preventDefault();
+                $(this).closest(".newHop").dialog("close");
+            });
+            
+            $("#addHopSearch").autocomplete({
+                source: "@Url.Action("List", "Ingredients", new {type="hops", format="json"})"
+            });
+            
+        });
+    </script>
+}
+
+@section sortRecipes {
+    <nav>
+        <ul class="sortRecipes">
+            <li>@Model.BeerName</li>
+            <li id="current">@Html.ActionLink("Details", "Show", new {Id = Model.BeerId}, null)</li>
+            <li>@Html.ActionLink("Comments", "Show", new {Id = Model.BeerId}, null)</li>
+         </ul>
+    </nav>
+}
+
+@Html.EditorForModel()

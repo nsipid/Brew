@@ -1,0 +1,86 @@
+﻿@model Brew.ViewModels.Recipes.DetailRecipeViewModel
+
+@using (Html.BeginForm("Update", "Recipes"))
+{
+    <fieldset>
+        <legend>Overview</legend>
+        <p>
+            @Html.LabelFor(m => m.BeerName)
+            @Html.TextBoxFor(m => m.BeerName)
+            @Html.ValidationMessageFor(m => m.BeerName)
+        </p>
+        <p>
+            @Html.LabelFor(m => m.Style)
+            @Html.TextBoxFor(m => m.Style)
+            @Html.ValidationMessageFor(m => m.Style)
+        </p>
+        <p>
+            @Html.LabelFor(m => m.RecipeType)
+            @Html.TextBoxFor(m => m.RecipeType)
+            @Html.ValidationMessageFor(m => m.RecipeType)
+        </p>
+        <p>
+            @Html.LabelFor(m => m.Abv)
+            @Html.TextBoxFor(m => m.Abv)
+            @Html.ValidationMessageFor(m => m.Abv)
+        </p>
+    </fieldset>
+
+    <fieldset>
+        <legend>Stats</legend>
+        <p>
+            @Html.LabelFor(m => m.OriginalGravity)
+            @Html.TextBoxFor(m => m.OriginalGravity)
+            @Html.ValidationMessageFor(m => m.OriginalGravity)
+        </p>
+        <p>
+            @Html.LabelFor(m => m.FinalGravity)
+            @Html.TextBoxFor(m => m.FinalGravity)
+            @Html.ValidationMessageFor(m => m.FinalGravity)
+        </p>
+        <p>
+            @Html.LabelFor(m => m.Carbonation)
+            @Html.TextBoxFor(m => m.Carbonation)
+            @Html.ValidationMessageFor(m => m.Carbonation)
+        </p>
+        <p>
+            @Html.LabelFor(m => m.Color)
+            @Html.TextBoxFor(m => m.Color)
+            @Html.ValidationMessageFor(m => m.Color)
+        </p>
+    </fieldset>
+
+    <section>
+        <h1>Ingredients</h1>
+        <section>
+            <h2>Hops</h2>
+            <div id ="hopList">
+            @foreach (var hop in Model.HopsUsed)
+            {
+                @Html.DisplayFor(m => hop);
+            }
+            </div>
+            @Html.TextBoxFor(m=>m.HopToAdd, "Add Hop", new {@id = "addHopSearch"})
+            <a href="#" class="addItem" />
+            @Html.ActionLink("Create New Hop", "Create", "Ingredients", new {type = "hop"}, new {@class = "openNewHop", data_newHop_id = "newHopDialog", data_newHop_title = "New Hop"})
+        </section>
+        <section>
+        <h2>Fermentables</h2>
+            <div id ="fermentableList">
+            @foreach (var f in Model.FermentablesUsed)
+            {
+                @Html.DisplayFor(m => f);
+            }
+            </div>
+            @Html.TextBoxFor(m=>m.HopToAdd, "Add Fermentable", new {@id = "addHopSearch"})
+            <a href="#" class="addItem" />
+            @Html.ActionLink("Create New Hop", "Create", "Ingredients", new {type = "fermentable"}, new {@class = "openNewFermentable", data_newFermentable_id = "newFermentableDialog", data_newFermentable_title = "New Fermentable"})
+        </section>
+    </section>
+
+    <fieldset>
+        <legend>Community</legend>
+    </fieldset>
+    
+    <input type="Submit" value="Apply"/>
+}

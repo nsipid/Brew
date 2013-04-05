@@ -1,49 +1,48 @@
-﻿<!DOCTYPE html>
+﻿@model Brew.ViewModels.BaseLayoutViewModel
+
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>@ViewBag.Title - My ASP.NET MVC Application</title>
+        <title>@Model.Title</title>
         <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
         <meta name="viewport" content="width=device-width" />
         @Styles.Render("~/Content/css")
+        @Styles.Render("~/Content/themes/base/css")
         @Scripts.Render("~/bundles/modernizr")
     </head>
     <body>
         <header>
             <div class="content-wrapper">
                 <div class="float-left">
-                    <p class="site-title">@Html.ActionLink("your logo here", "Index", "Home")</p>
+                    @Html.ActionLink("Brew", "List", "Recipes", null, new { @class = "logo"})
                 </div>
                 <div class="float-right">
                     <section id="login">
                         @Html.Partial("_LoginPartial")
                     </section>
-                    <nav>
-                        <ul id="menu">
-                            <li>@Html.ActionLink("Generate DB", "Index", "DB")</li>
-                            <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                            <li>@Html.ActionLink("About", "About", "Home")</li>
-                            <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-                        </ul>
-                    </nav>
                 </div>
+                <nav>
+                    <ul id="menu">
+                        <li>@Html.ActionLink("Recipes",  "List", "Recipes")</li>
+                        <li>@Html.ActionLink("Styles", "List", "Recipes")</li>
+                        <li>@Html.ActionLink("Users", "List", "Recipes")</li>
+                        <li>@Html.ActionLink("Ingredients", "List", "Recipes")</li>
+                    </ul>
+                </nav>
             </div>
         </header>
-        <div id="body">
-            @RenderSection("featured", required: false)
+        <div id="body">         
             <section class="content-wrapper main-content clear-fix">
+                @RenderSection("sortRecipes", required: false)
                 @RenderBody()
             </section>
         </div>
-        <footer>
-            <div class="content-wrapper">
-                <div class="float-left">
-                    <p>&copy; @DateTime.Now.Year - My ASP.NET MVC Application</p>
-                </div>
-            </div>
-        </footer>
 
         @Scripts.Render("~/bundles/jquery")
-        @RenderSection("scripts", required: false)
+        @Scripts.Render("~/bundles/jqueryval")
+        @Scripts.Render("~/bundles/jqueryui")
+        @RenderSection("scripts", required: false)     
+        
     </body>
 </html>

@@ -1,0 +1,30 @@
+﻿@model Brew.ViewModels.Ingredients.HopViewModel
+
+@using (Ajax.BeginForm(new AjaxOptions { UpdateTargetId = "newHopDialog", HttpMethod = "POST" }))
+{
+        <fieldset>
+        <legend>@Model.Name</legend>
+        <p>
+            @Html.LabelFor(m => m.Alpha)
+            @Html.TextBoxFor(m => m.Alpha)
+            @Html.ValidationMessageFor(m => m.Alpha)
+        </p>
+        <p>
+            @Html.LabelFor(m => m.Beta)
+            @Html.TextBoxFor(m => m.Beta)
+            @Html.ValidationMessageFor(m => m.Beta)
+        </p>
+        <p>
+            @Html.LabelFor(m => m.Type)
+            @Html.TextBoxFor(m => m.Type)
+            @Html.ValidationMessageFor(m => m.Type)
+        </p>
+        <p>
+            @Html.LabelFor(m => m.PercentCaryophyllene)
+            @Html.TextBoxFor(m => m.PercentCaryophyllene)
+            @Html.ValidationMessageFor(m => m.PercentCaryophyllene)
+        </p>
+    </fieldset>
+    
+    <input type="submit" value="Apply" />
+}

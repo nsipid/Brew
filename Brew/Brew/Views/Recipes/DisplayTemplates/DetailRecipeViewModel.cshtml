@@ -1,0 +1,61 @@
+﻿@model Brew.ViewModels.Recipes.DetailRecipeViewModel
+
+<div>
+    <img src="@Url.Action("Index", "BeerImage", new { id = Model.BeerId })"/>
+</div>
+
+<section>
+    <h1>Overview</h1>
+    <dl>
+        <dt>@Html.DisplayNameFor(m => m.BeerName)</dt>
+        <dd>@Html.DisplayTextFor(m => m.BeerName)</dd>
+        <dt>@Html.DisplayNameFor(m => m.Style)</dt>
+        <dd>@Html.DisplayTextFor(m => m.Style)</dd>
+        <dt>@Html.DisplayNameFor(m => m.RecipeType)</dt>
+        <dd>@Html.DisplayTextFor(m => m.RecipeType)</dd>
+        <dt>@Html.DisplayNameFor(m => m.Abv)</dt>
+        <dd>@Html.DisplayTextFor(m => m.Abv)</dd>
+    </dl>
+</section>
+
+<section>
+    <h1>Stats</h1>
+    <dl>
+        <dt>@Html.DisplayNameFor(m => m.OriginalGravity)</dt>
+        <dd>@Html.DisplayTextFor(m => m.OriginalGravity)</dd>
+        <dt>@Html.DisplayNameFor(m => m.FinalGravity)</dt>
+        <dd>@Html.DisplayTextFor(m => m.FinalGravity)</dd>
+        <dt>@Html.DisplayNameFor(m => m.Carbonation)</dt>
+        <dd>@Html.DisplayTextFor(m => m.Carbonation)</dd>
+        <dt>@Html.DisplayNameFor(m => m.Color)</dt>
+        <dd>@Html.DisplayTextFor(m => m.Color)</dd>
+    </dl>
+</section>
+
+<section>
+    <h1>Ingredients</h1>
+    <section>
+        <h1>Hops</h1>
+    </section>
+    <section>
+        <h1>Fermentables</h1>
+    </section>
+</section>
+
+<section>
+    <h1>Community</h1>
+    <dl>
+        <dt>@Html.DisplayNameFor(m => m.YourRating)</dt>
+        <dd>@Html.DisplayTextFor(m => m.YourRating)</dd>
+        <dt>@Html.DisplayNameFor(m => m.SiteRating)</dt>
+        <dd>@Html.DisplayTextFor(m => m.SiteRating)</dd>
+        <dt>@Html.DisplayNameFor(m => m.AvgRating)</dt>
+        <dd>@Html.DisplayTextFor(m => m.AvgRating)</dd>
+        <dt>@Html.DisplayNameFor(m => m.NumFavorites)</dt>
+        <dd>@Html.DisplayTextFor(m => m.NumFavorites)</dd>
+        <dt>@Html.DisplayNameFor(m => m.PostedDate)</dt>
+        <dd>@Html.DisplayTextFor(m => m.PostedDate)</dd>
+        <dt>@Html.DisplayNameFor(m => m.VisitedCount)</dt>
+        <dd>@Html.DisplayTextFor(m => m.VisitedCount)</dd>
+    </dl>
+</section>
