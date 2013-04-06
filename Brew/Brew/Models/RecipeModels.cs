@@ -8,29 +8,11 @@ using System.Data.Entity;
 
 namespace Brew.Models
 {
-    public class RecipieUtils
+    [Table("RecipieType")]
+    public class RecipieType
     {
-        public static RecipieType getRecipieType(string dbValue)
-        {
-            switch (dbValue)
-            {
-                case "All Grain":
-                    return Models.RecipieType.AllGrain;
-                case "Extract":
-                    return Models.RecipieType.Extract;
-                case "Partial Mash":
-                    return Models.RecipieType.PartialMash;              
-                default:
-                    throw new Exception(dbValue + " is not a RecipieType");
-            }
-        }
-    }
-
-    public enum RecipieType
-    {
-        AllGrain,
-        Extract,
-        PartialMash
+        [Key, StringLength(75)]
+        public string Name { get; set; }
     }
 
     [Table("Recipe")]
@@ -38,7 +20,7 @@ namespace Brew.Models
     {
         [Key, StringLength(75)]
         public string Name { get; set; }
-        [Required]
+        //[Required]
         public RecipieType RecipieType { get; set; }
         [Required]
         public virtual ICollection<UserProfile> Brewers { get; set; }
@@ -85,8 +67,9 @@ namespace Brew.Models
         public float PrimingSugarEquiv { get; set; } // Factor used to convert this priming agent to an equivalent amount of corn sugar for a bottled scenario.  
         public float KegPrimingFactor { get; set; } // Used to factor in the smaller amount of sugar needed for large containers. 
         public float SiteRating { get; set; } // ADDED for website
-        //[ForeignKey("Style")]
-        //public string Style_Name { get; set; }
+
+        [ForeignKey("RecipieType")]
+        public string RecipieType_Name { get; set; }
 
         public Recipe()
         {

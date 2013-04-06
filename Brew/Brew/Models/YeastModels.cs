@@ -8,85 +8,25 @@ using System.Data.Entity;
 
 namespace Brew.Models
 {
-    public class YeastUtils
+    [Table("YeastType")]
+    public class YeastType
     {
-        public static YeastType getYeastType(string dbValue)
-        {
-            switch (dbValue)
-            {
-                case "Ale":
-                    return Models.YeastType.Ale;
-                case "Lager":
-                    return Models.YeastType.Lager;
-                case "Wheat":
-                    return Models.YeastType.Wheat;
-                case "Wine":
-                    return Models.YeastType.Wine;
-                case "Champagne":
-                    return Models.YeastType.Champagne;
-                default:
-                    throw new Exception(dbValue + " is not a YeastType");
-            }
-        }
-
-        public static YeastForm getYeastForm(string dbValue)
-        {
-            switch (dbValue)
-            {
-                case "Liquid":
-                    return Models.YeastForm.Liquid;
-                case "Dry":
-                    return Models.YeastForm.Dry;
-                case "Slant":
-                    return Models.YeastForm.Slant;
-                case "Culture":
-                    return Models.YeastForm.Culture;              
-                default:
-                    throw new Exception(dbValue + " is not a YeastForm");
-            }
-        }
-
-        public static YeastFlocculation getYeastFlocculation(string dbValue)
-        {
-            switch (dbValue)
-            {
-                case "Low":
-                    return Models.YeastFlocculation.Low;
-                case "Medium":
-                    return Models.YeastFlocculation.Medium;
-                case "High":
-                    return Models.YeastFlocculation.High;
-                case "Very High":
-                    return Models.YeastFlocculation.VeryHigh;
-                default:
-                    throw new Exception(dbValue + " is not a YeastFlocculation");
-            }
-        }
+        [Key, StringLength(75)]
+        public string Name { get; set; }
     }
 
-    public enum YeastType
+    [Table("YeastForm")]
+    public class YeastForm
     {
-        Ale,
-        Lager,
-        Wheat,
-        Wine,
-        Champagne
+        [Key, StringLength(75)]
+        public string Name { get; set; }
     }
 
-    public enum YeastForm
+    [Table("YeastFlocculation")]
+    public class YeastFlocculation
     {
-        Liquid,
-        Dry,
-        Slant,
-        Culture
-    }
-
-    public enum YeastFlocculation
-    {
-        Low,
-        Medium,
-        High,
-        VeryHigh
+        [Key, StringLength(75)]
+        public string Name { get; set; }
     }
 
     [Table("Yeast")]
@@ -94,9 +34,9 @@ namespace Brew.Models
     {
         [Key, StringLength(75)]
         public string Name { get; set; }
-        [Required]
+        //[Required]
         public YeastType YeastType { get; set; }
-        [Required]
+        //[Required]
         public YeastForm YeastForm { get; set; }
         [Required]
         public float Amount { get; set; } // The amount of yeast, measured in liters.  For a starter this is the size of the starter. If the flag AMOUNT_IS_WEIGHT is set to TRUE then this measurement is in kilograms and not liters.
@@ -108,7 +48,7 @@ namespace Brew.Models
         public float MinTemperature { get; set; } // The minimum recommended temperature for fermenting this yeast strain in degrees Celsius.
         [Range(-50, 110)] 
         public float MaxTemperature { get; set; } // The maximum recommended temperature for fermenting this yeast strain in Celsius.
-        public YeastFlocculation Focculation { get; set; }
+        public YeastFlocculation YeastFlocculation { get; set; }
         public float Attenuation { get; set; } // Average attenuation for this yeast strain.
         public string Notes { get; set; }
         public string BestFor { get; set; } // Styles or types of beer this yeast strain is best suited for.
@@ -117,6 +57,15 @@ namespace Brew.Models
         public bool AddToSecondary { get; set; }  // Flag denoting that this yeast was added for a secondary (or later) fermentation as opposed to the primary fermentation   
 
         public virtual ICollection<Recipe> UsingRecipes { get; set; }
+
+        [ForeignKey("YeastType")]
+        public string YeastType_Name { get; set; }
+
+        [ForeignKey("YeastFlocculation")]
+        public string YeastFlocculation_Name { get; set; }
+
+        [ForeignKey("YeastForm")]
+        public string YeastForm_Name { get; set; }
 
         public Yeast()
         {

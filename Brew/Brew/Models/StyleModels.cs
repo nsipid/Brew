@@ -8,38 +8,11 @@ using System.Data.Entity;
 
 namespace Brew.Models
 {
-    public class StyleUtils
-    {        
-        public static StyleType getStyleType(string dbValue)
-        {
-            switch (dbValue)
-            {
-                case "Lager":
-                    return Models.StyleType.Lager;
-                case "Ale":
-                    return Models.StyleType.Ale;
-                case "Mead":
-                    return Models.StyleType.Mead;
-                case "Wheat":
-                    return Models.StyleType.Wheat;
-                case "Mixed":
-                    return Models.StyleType.Mixed;
-                case "Cider":
-                    return Models.StyleType.Cider;
-                default:
-                    throw new Exception(dbValue + " is not a StyleType");
-            }
-        }       
-    }
-       
-    public enum StyleType
+    [Table("StyleType")]
+    public class StyleType
     {
-        Lager,
-        Ale,
-        Mead,
-        Wheat,
-        Mixed,
-        Cider
+        [Key, StringLength(75)]
+        public string Name { get; set; }
     }
 
     // The term "style" encompasses beer styles.  The beer style may be from the BJCP style guide, Australian, UK or local style guides. 
@@ -81,6 +54,9 @@ namespace Brew.Models
         public string Profile { get; set; } // Flavor and aroma profile for this style
         public string Ingredients { get; set; } // Suggested ingredients for this style
         public string Eamples { get; set; } // Example beers of this style.
+
+        [ForeignKey("StyleType")]
+        public string StyleType_Name { get; set; } 
 
         public virtual ICollection<Recipe> UsingRecipes { get; set; }
 

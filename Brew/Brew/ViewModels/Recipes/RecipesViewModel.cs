@@ -19,13 +19,13 @@ namespace Brew.ViewModels.Recipes
             using (var context = new Models.UsersContext())
             {
                 var dbModel = (from r in context.Recipes.Include(p => p.Style) select r);
-                      foreach (var recipie in dbModel)
+                foreach (var recipie in dbModel)
                 {                     
                     allBeers.Add(new BeerSummaryViewModel
                     {
-                        Abv = 10,
-                        AvgRating = (decimal)recipie.TasteRating,
-                        SiteRating = (decimal)recipie.SiteRating,
+                        Abv = 10,                                 // from equation
+                        AvgRating = (decimal)recipie.TasteRating, // average of all votes
+                        SiteRating = (decimal)recipie.SiteRating, 
                         Color = recipie.Efficiency,
                         Id = 1,
                         Name = recipie.Name,

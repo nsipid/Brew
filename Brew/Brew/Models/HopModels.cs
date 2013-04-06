@@ -8,80 +8,25 @@ using System.Data.Entity;
 
 namespace Brew.Models
 {
-    public class HopUtils
+    [Table("HopForm")]
+    public class HopForm
     {
-        public static HopType getHopType(string dbValue)
-        {
-            switch (dbValue)
-            {
-                case "Both":
-                    return Models.HopType.Both;
-                case "Aroma":
-                    return Models.HopType.Aroma;
-                case "Bittering":
-                    return Models.HopType.Bittering;
-
-                default:
-                    throw new Exception(dbValue + " is not a HopType");
-            }
-        }
-
-        public static HopForm getHopForm(string dbValue)
-        {
-            switch (dbValue)
-            {
-                case "Plug":
-                    return Models.HopForm.Plug;
-                case "Pellet":
-                    return Models.HopForm.Pellet;
-                case "Leaf":
-                    return Models.HopForm.Leaf;
-                default:
-                    throw new Exception(dbValue + " is not a HopForm");
-            }
-        }
-
-        public static HopUse getHopUse(string dbValue)
-        {           
-            switch (dbValue)
-            {
-                case "Boil":
-                    return Models.HopUse.Boil;
-                case "Aroma":
-                    return Models.HopUse.Aroma;
-                case "DryHop":
-                    return Models.HopUse.DryHop;
-                case "First Wort":
-                    return Models.HopUse.FirstWort;
-                case "Mash":
-                    return Models.HopUse.Mash;
-                default:
-                    throw new Exception(dbValue + " is not a HopUse");
-            }
-        }
+        [Key, StringLength(75)]
+        public string Name { get; set; }
     }
 
-    public enum HopForm
+    [Table("HopType")]
+    public class HopType
     {
-        Pellet,
-        Plug,
-        Leaf
+        [Key, StringLength(75)]
+        public string Name { get; set; }
     }
 
-    public enum HopType
+    [Table("HopUse")]
+    public class HopUse
     {
-        Bittering,
-        Aroma,
-        Both
-    }
-
-    public enum HopUse
-    {
-        Boil,
-        DryHop,
-        Mash,
-        FirstWort,
-        Aroma
+        [Key, StringLength(75)]
+        public string Name { get; set; }
     }
 
     // System.ComponentModel.DataAnnotations.MaxLengthAttribute
@@ -96,14 +41,12 @@ namespace Brew.Models
         public float Alpha { get; set; } // Percent alpha of hops - for example "5.5" represents 5.5% alpha
         [Required]
         public float Amount { get; set; } // Weight in Kilograms of the hops used in the recipe.
-        [Required, EnumDataType(typeof(HopUse))]
+        //[Required]
         public HopUse HopUses { get; set; }
         [Required]
         public float Time { get; set; } // Meaning is dependent on the “USE” 
         public string Notes { get; set; }
-        [EnumDataType(typeof(HopType))]
         public HopType HopType { get; set; }
-        [EnumDataType(typeof(HopForm))]
         public HopForm HopForm { get; set; }
         [Range(0.0, 100)]
         public float Beta { get; set; } // Hop beta percentage - for example "4.4" denotes 4.4 % beta
@@ -120,6 +63,15 @@ namespace Brew.Models
         public float Cohumulone { get; set; } // Cohumulone level in percent
         [Range(0.0, 100)]
         public float Myrcene { get; set; } // Myrcene level in percent
+
+        [ForeignKey("HopUses")]
+        public string HopUses_Name { get; set; }
+
+        [ForeignKey("HopForm")]
+        public string HopForm_Name { get; set; }
+
+        [ForeignKey("HopType")]
+        public string HopType_Name { get; set; } 
 
         public virtual ICollection<Recipe> UsingRecipes { get; set; }
 

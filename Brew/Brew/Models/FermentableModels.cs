@@ -7,44 +7,20 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 
 namespace Brew.Models
-{
-    public class FermentableUtils
+{    
+    [Table("FermentableType")]
+    public class FermentableType
     {
-        public static FermentableType getFermentableType(string dbValue)
-        {
-            switch (dbValue)
-            {
-                case "Grain":
-                    return Models.FermentableType.Grain;
-                case "Sugar":
-                    return Models.FermentableType.Sugar;
-                case "Extract":
-                    return Models.FermentableType.Extract;
-                case "Dry Extract":
-                    return Models.FermentableType.DryExtract;
-                case "Adjunct":
-                    return Models.FermentableType.Adjunct;
-                default:
-                    throw new Exception(dbValue + " is not a FermentableType");
-            }
-        }
-    }
-
-    public enum FermentableType
-    {
-        Grain,
-        Sugar,
-        Extract,
-        DryExtract,
-        Adjunct
+        [Key, StringLength(75)]
+        public string Name { get; set; }
     }
 
     [Table("Fermentable")]
     public class Fermentable : IEquatable<Fermentable>
     {
-        [Key]
+        [Key, StringLength(75)]
         public string Name { get; set; }
-        [Required]
+        //[Required]
         public FermentableType FermentableType { get; set; }
         [Required]
         public float Amount { get; set; } // Weight of the fermentable, extract or sugar in Kilograms.
@@ -70,6 +46,9 @@ namespace Brew.Models
         public bool Recommended_Mash { get; set; } // TRUE if it is recommended the grain be mashed, FALSE if it can be steeped. 
         public bool IsMashed { get; set; }
         public float IBUs { get; set; } // For hopped extracts only - an estimate of the number of IBUs per pound of extract in a gallon of water.  
+
+        [ForeignKey("FermentableType")]
+        public string FermentableType_Name { get; set; } 
 
         public virtual ICollection<Recipe> UsingRecipes { get; set; }
 

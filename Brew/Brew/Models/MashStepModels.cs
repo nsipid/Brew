@@ -8,29 +8,11 @@ using System.Data.Entity;
 
 namespace Brew.Models
 {
-    public class MashStepUtils
+    [Table("MashStepType")]
+    public class MashStepType
     {
-        public static MashStepType getMashStepType(string dbValue)
-        {
-            switch (dbValue)
-            {
-                case "Infusion":
-                    return Models.MashStepType.Infusion;
-                case "Temperature":
-                    return Models.MashStepType.Temperature;
-                case "Decoction":
-                    return Models.MashStepType.Decoction;     
-                default:
-                    throw new Exception(dbValue + " is not a MashStepType");
-            }
-        }
-    }
-
-    public enum MashStepType
-    {
-        Infusion,
-        Temperature,
-        Decoction
+        [Key, StringLength(75)]
+        public string Name { get; set; }
     }
 
     //A mash step is an internal record used within a mash profile to denote a separate step in a multi-step mash. 
@@ -41,7 +23,7 @@ namespace Brew.Models
         public int UID { get; set; }
         [StringLength(75)]        
         public string Name { get; set; }
-        [Required]
+        //[Required]
         public MashStepType MashStepType { get; set; }
         public float InfuseAmount { get; set; } // Volume (liters) The volume of water in liters to infuse in this step
         [Required, Range(-50, 110)] 
@@ -56,5 +38,8 @@ namespace Brew.Models
         public float DecoctionAmount { get; set; } // Volume of mash to decoct
         [Required]
         public int SequenceNumber { get; set; }
+
+        [ForeignKey("MashStepType")]
+        public string MashStepType_Name { get; set; }
     }
 }
