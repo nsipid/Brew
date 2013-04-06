@@ -84,18 +84,20 @@ namespace Brew.Models
         Aroma
     }
 
+    // [StringLength(250)]
+    // [Key]
+    // [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
+    // public int UID { get; set; }
+
     [Table("Hop")]
-    public class Hop
-    {
-        [Key]
-        [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
-        public int UID { get; set; }
-        [Required]
+    public class Hop : IEquatable<Hop>
+    {        
+        [Key]        
         public string Name { get; set; }
         [Required]
         public float Alpha { get; set; } // Percent alpha of hops - for example "5.5" represents 5.5% alpha
         [Required]
-        public float Weight { get; set; } // Weight in Kilograms of the hops used in the recipe.
+        public float Amount { get; set; } // Weight in Kilograms of the hops used in the recipe.
         [Required]
         public HopUse HopUses { get; set; }
         [Required]
@@ -111,6 +113,27 @@ namespace Brew.Models
         public float? Caryophyllene { get; set; } // Caryophyllene level in percent
         public float? Cohumulone { get; set; } // Cohumulone level in percent
         public float? Myrcene { get; set; } // Myrcene level in percent
-    }
 
+        public virtual ICollection<Recipe> UsingRecipes { get; set; }
+
+        public Hop()
+        {
+            UsingRecipes = new HashSet<Recipe>();            
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as Hop);
+        }
+
+        public bool Equals(Hop other)
+        {
+            return (other.Name == this.Name);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Name.GetHashCode();
+        }
+    }
 }

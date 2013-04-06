@@ -40,7 +40,6 @@ namespace Brew.Models
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int UID { get; set; }
-        [Required]
         public string Name { get; set; }
         [Required]
         public MashStepType MashStepType { get; set; }
@@ -53,6 +52,8 @@ namespace Brew.Models
         public float EndTemp { get; set; } // Temperature you can expect the mash to fall to after a long mash step.  Measured in degrees Celsius.
         public float  InfuseTemp { get; set; }
         public float DecoctionAmount { get; set; }
-    }
 
+        [Required]
+        public int SequenceNumber { get; set; }
+    }
 }

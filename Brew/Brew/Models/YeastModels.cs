@@ -90,12 +90,9 @@ namespace Brew.Models
     }
 
     [Table("Yeast")]
-    public class Yeast
+    public class Yeast : IEquatable<Yeast>
     {
         [Key]
-        [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
-        public int UID { get; set; }
-        [Required]
         public string Name { get; set; }
         [Required]
         public YeastType YeastType { get; set; }
@@ -115,5 +112,27 @@ namespace Brew.Models
         public int? TimesCultured { get; set; } // Number of times this yeast has been reused as a harvested culture.  
         public int? MaxReuse { get; set; }  // Recommended of times this yeast can be reused (recultured from a previous batch)
         public bool? AddToSecondary { get; set; }  // Flag denoting that this yeast was added for a secondary (or later) fermentation as opposed to the primary fermentation   
+
+        public virtual ICollection<Recipe> UsingRecipes { get; set; }
+
+        public Yeast()
+        {
+            UsingRecipes = new HashSet<Recipe>();            
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as Yeast);
+        }
+
+        public bool Equals(Yeast other)
+        {
+            return (other.Name == this.Name);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Name.GetHashCode();
+        }
     }
 }

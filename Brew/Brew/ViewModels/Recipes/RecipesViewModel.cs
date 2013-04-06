@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Data.Entity;
 
 namespace Brew.ViewModels.Recipes
 {
@@ -15,45 +16,26 @@ namespace Brew.ViewModels.Recipes
         {
             SortBy = "hoppin";
             var allBeers = new List<BeerSummaryViewModel>();
-            for (int i = 1; i < 1000; i++)
+            using (var context = new Models.UsersContext())
             {
-                allBeers.Add(new BeerSummaryViewModel
+                var dbModel = (from r in context.Recipes.Include(p => p.Style) select r);
+                      foreach (var recipie in dbModel)
+                {                     
+                    allBeers.Add(new BeerSummaryViewModel
                     {
                         Abv = 10,
-                        AvgRating = 9.9m,
-                        SiteRating = 9.8m,
-                        Color = 71,
+                        AvgRating = (decimal)recipie.TasteRating,
+                        SiteRating = (decimal)recipie.SiteRating,
+                        Color = recipie.Efficiency,
                         Id = 1,
-                        Name = "McGroober's Finest <script>ruhroh!</script>",
-                        Style = "Irish Stout",
+                        Name = recipie.Name,
+                        Style = recipie.Style_Name,
                         User = "McGroober"
                     });
-                allBeers.Add(new BeerSummaryViewModel
-                    {
-                        Abv = 10,
-                        AvgRating = 9.9m,
-                        SiteRating = 9.8m,
-                        Color = 71,
-                        Id = 2,
-                        Name = "McGroober's Finest",
-                        Style = "Irish Stout",
-                        User = "McGroober"
-                    });
-                allBeers.Add(new BeerSummaryViewModel
-                    {
-                        Abv = 10,
-                        AvgRating = 9.9m,
-                        SiteRating = 9.8m,
-                        Color = 71,
-                        Id = 3,
-                        Name = "McGroober's Finest",
-                        Style = "Irish Stout",
-                        User = "McGroober"
-                    });
+                }
             }
-            Beers = new PagedList<BeerSummaryViewModel>(allBeers.GetRange((int) (pageNo*30), (int) Math.Min(allBeers.Count, pageNo*30 + 30)), (uint) Math.Ceiling(allBeers.Count/30d), pageNo, 30);
-        }
 
-       
+            Beers = new PagedList<BeerSummaryViewModel>(allBeers.GetRange((int)(pageNo * 30), (int)Math.Min(allBeers.Count, pageNo * 30 + 30)), allBeers.Count < 30 ? 0 : (uint)Math.Ceiling(allBeers.Count / 30d), pageNo, 30);
+        }     
     }
 }

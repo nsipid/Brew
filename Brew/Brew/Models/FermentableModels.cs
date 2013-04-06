@@ -40,12 +40,9 @@ namespace Brew.Models
     }
 
     [Table("Fermentable")]
-    public class Fermentable
+    public class Fermentable : IEquatable<Fermentable>
     {
         [Key]
-        [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
-        public int UID { get; set; }
-        [Required]
         public string Name { get; set; }
         [Required]
         public FermentableType FermentableType { get; set; }
@@ -67,5 +64,27 @@ namespace Brew.Models
         public bool? Recommended_Mash { get; set; } // TRUE if it is recommended the grain be mashed, FALSE if it can be steeped. 
         public bool? IsMashed { get; set; }
         public float? IBUs { get; set; } // For hopped extracts only - an estimate of the number of IBUs per pound of extract in a gallon of water.  
+
+        public virtual ICollection<Recipe> UsingRecipes { get; set; }
+
+        public Fermentable()
+        {
+            UsingRecipes = new HashSet<Recipe>();            
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as Fermentable);
+        }
+
+        public bool Equals(Fermentable other)
+        {
+            return (other.Name == this.Name);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Name.GetHashCode();
+        }
     }
 }

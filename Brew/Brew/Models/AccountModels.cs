@@ -13,7 +13,7 @@ namespace Brew.Models
         public UsersContext()
             : base("DefaultConnection")
         {
-        }
+        }      
 
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<Hop> Hops { get; set; }

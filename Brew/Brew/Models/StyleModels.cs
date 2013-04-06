@@ -47,9 +47,6 @@ namespace Brew.Models
     public class Style
     {
         [Key]
-        [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
-        public int UID { get; set; }
-        [Required]
         public string Name { get; set; }
         [Required]
         public string Category { get; set; }
@@ -84,6 +81,12 @@ namespace Brew.Models
         public string Profile { get; set; } // Flavor and aroma profile for this style
         public string Ingredients { get; set; } // Suggested ingredients for this style
         public string Eamples { get; set; } // Example beers of this style.
-    }
 
+        public virtual ICollection<Recipe> UsingRecipes { get; set; }
+
+        public Style()
+        {
+            UsingRecipes = new HashSet<Recipe>();            
+        }
+    }
 }
