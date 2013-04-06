@@ -12,21 +12,13 @@ namespace Brew.ViewModels.Recipes
 
         [DisplayName("Name")]
         public string BeerName { get; set; }
-
         public List<string> Creators { get; set; }
-
         public decimal YourRating { get; set; }
-
         public decimal SiteRating { get; set; }
-
         public decimal AvgRating { get; set; }
-
         public ulong NumFavorites { get; set; }
-
         public bool IsYourFavorite { get; set; }
-
         public DateTime PostedDate { get; set; }
-
         public ulong VisitedCount { get; set; }
     }
 }
