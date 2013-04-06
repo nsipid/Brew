@@ -173,9 +173,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="DBGeneration\MakeAll.cs" />
-    <Compile Include="Migrations\201304061938517_gf.cs" />
-    <Compile Include="Migrations\201304061938517_gf.Designer.cs">
-      <DependentUpon>201304061938517_gf.cs</DependentUpon>
+    <Compile Include="Migrations\201304062230109_t.cs" />
+    <Compile Include="Migrations\201304062230109_t.Designer.cs">
+      <DependentUpon>201304062230109_t.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountModels.cs" />
@@ -183,7 +183,10 @@
     <Compile Include="Models\HopModels.cs" />
     <Compile Include="Models\MashProfileModels.cs" />
     <Compile Include="Models\MashStepModels.cs" />
+    <Compile Include="Models\RecipeFermentableModels.cs" />
+    <Compile Include="Models\RecipeHopModels.cs" />
     <Compile Include="Models\RecipeModels.cs" />
+    <Compile Include="Models\RecipeYeastModels.cs" />
     <Compile Include="Models\StyleModels.cs" />
     <Compile Include="Models\YeastModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -320,8 +323,8 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201304061938517_gf.resx">
-      <DependentUpon>201304061938517_gf.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201304062230109_t.resx">
+      <DependentUpon>201304062230109_t.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

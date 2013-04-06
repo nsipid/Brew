@@ -28,12 +28,10 @@ namespace Brew.Models
         public float Yield { get; set; } // Percent dry yield (fine grain) for the grain, or the raw yield by weight if this is an extract adjunct or sugar.
         [Required]
         public float Color { get; set; } // The color of the item in Lovibond Units (SRM for liquid extracts).
-        public bool AddAfterBoil { get; set; } // May be TRUE if this item is normally added after the boil.
         [StringLength(75)]
         public string Origin { get; set; } // Country or place of origin
         [StringLength(75)]
         public string Supplier { get; set; } // Supplier of the grain/extract/sugar
-        public string Notes { get; set; }
         [Range(0.0, 100)]
         public float CoarseFineDiff { get; set; } // Percent difference between the coarse grain yield and fine grain yield.  Only appropriate for a "Grain" or "Adjunct" type, otherwise this value is ignored.
         [Range(0.0, 100)]
@@ -41,20 +39,16 @@ namespace Brew.Models
         public float DiastaticPower { get; set; } // The diastatic power of the grain as measured in "Lintner" units. Only appropriate for a "Grain" or "Adjunct" type, otherwise this value is ignored.
         [Range(0.0, 100)]
         public float Protein { get; set; } // The percent protein in the grain.  Only appropriate for a "Grain" or "Adjunct" 
-        [Range(0.0, 100)]
-        public float MaxInBatch { get; set; } // The recommended maximum percentage (by weight) this ingredient should represent in a batch of beer.
-        public bool Recommended_Mash { get; set; } // TRUE if it is recommended the grain be mashed, FALSE if it can be steeped. 
-        public bool IsMashed { get; set; }
         public float IBUs { get; set; } // For hopped extracts only - an estimate of the number of IBUs per pound of extract in a gallon of water.  
 
         [ForeignKey("FermentableType")]
-        public string FermentableType_Name { get; set; } 
+        public string FermentableType_Name { get; set; }
 
-        public virtual ICollection<Recipe> UsingRecipes { get; set; }
+        public virtual ICollection<RecipeFermentable> RecipeFermentables { get; set; }
 
         public Fermentable()
         {
-            UsingRecipes = new HashSet<Recipe>();            
+            RecipeFermentables = new HashSet<RecipeFermentable>();        
         }
 
         public override bool Equals(object obj)

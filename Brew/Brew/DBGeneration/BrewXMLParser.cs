@@ -13,6 +13,7 @@ namespace Brew.DBGeneration
     
     public class BrewXMLParser
     {
+        /**
         //
         // GET: /DB/
              
@@ -90,19 +91,10 @@ namespace Brew.DBGeneration
                             case "ATTENUATION":
                                 yeast.Attenuation = float.Parse(reader.Value);
                                 break;
-                            case "NOTES":
-                                yeast.Notes = reader.Value;
-                                break;
-                            case "BEST_FOR":
-                                yeast.BestFor = reader.Value;
-                                break;
                             case "TIMES_CULTURED":
                                 yeast.TimesCultured = int.Parse(reader.Value);
                                 break;
-                            case "MAX_REUSE":
-                                yeast.MaxReuse = int.Parse(reader.Value);
-                                break;
-                            case "ADD_TO_SECONDARY":
+                           case "ADD_TO_SECONDARY":
                                 yeast.AddToSecondary = bool.Parse(reader.Value);
                                 break;
                         }
@@ -163,9 +155,6 @@ namespace Brew.DBGeneration
                             case "ORIGIN":
                                 fermentable.Origin = reader.Value;
                                 break;
-                            case "NOTES":
-                                fermentable.Notes = reader.Value;
-                                break;
                             case "COARSE_FINE_DIFF":
                                 fermentable.CoarseFineDiff = float.Parse(reader.Value);
                                 break;
@@ -175,13 +164,7 @@ namespace Brew.DBGeneration
                             case "PROTEIN":
                                 fermentable.Protein = float.Parse(reader.Value);
                                 break;
-                            case "MAX_IN_BATCH":
-                                fermentable.MaxInBatch = float.Parse(reader.Value);
-                                break;
-                            case "RECOMMEND_MASH":
-                                fermentable.Recommended_Mash = bool.Parse(reader.Value);
-                                break;
-                            case "IS_MASHED":
+                           case "IS_MASHED":
                                 fermentable.IsMashed = bool.Parse(reader.Value);
                                 break;
                             case "IBU_GAL_PER_LB":
@@ -238,10 +221,7 @@ namespace Brew.DBGeneration
                             case "TIME":
                                 hop.Time = float.Parse(reader.Value);
                                 break;
-                            case "NOTES":
-                                hop.Notes = reader.Value;
-                                break;
-                            case "TYPE":
+                           case "TYPE":
                                 Models.HopType hopType = new Models.HopType() { Name = reader.Value };
                                 using (var context = new Models.UsersContext())
                                 {
@@ -781,6 +761,7 @@ namespace Brew.DBGeneration
             // ParseStyleXML("C:\\Projects\\Brew\\BeerXML\\btrecipes.xml");
             // ParseMashStepsXML("C:\\Projects\\Brew\\BeerXML\\btrecipes.xml");          
         }
+         **/
     }
 }
     

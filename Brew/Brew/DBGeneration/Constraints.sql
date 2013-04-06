@@ -208,4 +208,17 @@ ADD CONSTRAINT CK_Recipe_CarbonationTemp_Range CHECK (
    CarbonationTemp >= -50 AND CarbonationTemp <= 110 --Inclusive The degrees Celsius
 )	 
 	 
-	   
+ALTER TABLE RecipeFermentables 
+ADD IsMashed BIT           DEFAULT ((0)) NOT NULL
+
+ALTER TABLE RecipeFermentables 
+ADD "AddAfterBoil" BIT           DEFAULT ((0)) NOT NULL
+
+ALTER TABLE RecipeYeasts 
+ADD AddToSecondary BIT           DEFAULT ((0)) NOT NULL
+
+ALTER TABLE RecipeHops
+ADD HopUses_Name NVARCHAR (75)  NULL
+
+ALTER TABLE RecipeHops
+ADD CONSTRAINT [FK_dbo.Hop_dbo.HopUse_HopUses_Name] FOREIGN KEY ([HopUses_Name]) REFERENCES [dbo].[HopUse] ([Name])

@@ -15,6 +15,9 @@ namespace Brew.Models
         {
         }
 
+        public DbSet<RecipeHop> RecipeHops { get; set; }
+        public DbSet<RecipeYeast> RecipeYeasts { get; set; }
+        public DbSet<RecipeFermentable> RecipeFermentables { get; set; }
         public DbSet<YeastForm> YeastForms { get; set; }
         public DbSet<YeastFlocculation> YeastFlocculations { get; set; }
         public DbSet<YeastType> YeastTypes { get; set; }
@@ -43,6 +46,7 @@ namespace Brew.Models
         public int UserId { get; set; }
         public string UserName { get; set; }
         public string Email { get; set; }
+        public byte[] Image { get; set; }
     }
 
     public class LocalPasswordModel

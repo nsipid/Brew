@@ -41,11 +41,8 @@ namespace Brew.Models
         public float Alpha { get; set; } // Percent alpha of hops - for example "5.5" represents 5.5% alpha
         [Required]
         public float Amount { get; set; } // Weight in Kilograms of the hops used in the recipe.
-        //[Required]
-        public HopUse HopUses { get; set; }
         [Required]
         public float Time { get; set; } // Meaning is dependent on the “USE” 
-        public string Notes { get; set; }
         public HopType HopType { get; set; }
         public HopForm HopForm { get; set; }
         [Range(0.0, 100)]
@@ -63,21 +60,18 @@ namespace Brew.Models
         public float Cohumulone { get; set; } // Cohumulone level in percent
         [Range(0.0, 100)]
         public float Myrcene { get; set; } // Myrcene level in percent
-
-        [ForeignKey("HopUses")]
-        public string HopUses_Name { get; set; }
-
+              
         [ForeignKey("HopForm")]
         public string HopForm_Name { get; set; }
 
         [ForeignKey("HopType")]
-        public string HopType_Name { get; set; } 
+        public string HopType_Name { get; set; }
 
-        public virtual ICollection<Recipe> UsingRecipes { get; set; }
+        public virtual ICollection<RecipeHop> RecipeHops { get; set; }
 
         public Hop()
         {
-            UsingRecipes = new HashSet<Recipe>();            
+            RecipeHops = new HashSet<RecipeHop>();           
         }
 
         public override bool Equals(object obj)

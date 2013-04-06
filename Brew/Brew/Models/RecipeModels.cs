@@ -17,7 +17,7 @@ namespace Brew.Models
 
     [Table("Recipe")]
     public class Recipe
-    {
+    {   
         [Key, StringLength(75)]
         public string Name { get; set; }
         //[Required]
@@ -25,9 +25,9 @@ namespace Brew.Models
         [Required]
         public virtual ICollection<UserProfile> Brewers { get; set; }
         [Required]
-        public virtual ICollection<Fermentable> Fermentables { get; set; }
+        public virtual ICollection<RecipeFermentable> RecipeFermentables { get; set; }
         [Required]
-        public virtual ICollection<Yeast> Yeasts { get; set; }
+        public virtual ICollection<RecipeYeast> RecipeYeasts { get; set; }
         public Style Style { get; set; }
         [Required]
         public float BatchSize { get; set; } // Target size of the finished batch in liters.
@@ -37,7 +37,7 @@ namespace Brew.Models
         public float BoilTime { get; set; } // The total time to boil the wort in minutes.
         public float Efficiency { get; set; } // The percent brewhouse efficiency to be used for estimating the starting gravity of the beer.   Not required for “Extract” recipes, but is required for “Partial Mash” and “All Grain” recipes.
         [Required]
-        public virtual ICollection<Hop> Hops { get; set; }
+        public virtual ICollection<RecipeHop> RecipeHops { get; set; }
         public virtual MashProfile Mash { get; set; }
         public string Notes { get; set; }
         public string TasteNotes { get; set; }
@@ -67,16 +67,17 @@ namespace Brew.Models
         public float PrimingSugarEquiv { get; set; } // Factor used to convert this priming agent to an equivalent amount of corn sugar for a bottled scenario.  
         public float KegPrimingFactor { get; set; } // Used to factor in the smaller amount of sugar needed for large containers. 
         public float SiteRating { get; set; } // ADDED for website
+        public byte[] Image { get; set; }
 
         [ForeignKey("RecipieType")]
         public string RecipieType_Name { get; set; }
 
         public Recipe()
         {
+            RecipeFermentables = new HashSet<RecipeFermentable>();
             Brewers = new HashSet<UserProfile>();
-            Fermentables = new HashSet<Fermentable>();
-            Yeasts = new HashSet<Yeast>();
-            Hops = new HashSet<Hop>();            
+            RecipeHops = new HashSet<RecipeHop>();
+            RecipeYeasts = new HashSet<RecipeYeast>();      
         }
     }
 }
