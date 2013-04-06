@@ -78,9 +78,9 @@ namespace Brew.Models
         public float CarbonationTemp { get; set; } // The temperature for either bottling or forced carbonation.
         public float PrimingSugarEquiv { get; set; } // Factor used to convert this priming agent to an equivalent amount of corn sugar for a bottled scenario.  
         public float KegPrimingFactor { get; set; } // Used to factor in the smaller amount of sugar needed for large containers. 
-        public float SiteRating { get; set; }
-        [ForeignKey("Style")]
-        public string Style_Name { get; set; }
+        public float SiteRating { get; set; } // ADDED for website
+        //[ForeignKey("Style")]
+        //public string Style_Name { get; set; }
 
         public Recipe()
         {

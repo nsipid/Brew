@@ -29,7 +29,7 @@ namespace Brew.ViewModels.Recipes
                         Color = recipie.Efficiency,
                         Id = 1,
                         Name = recipie.Name,
-                        Style = recipie.Style_Name,
+                        Style = recipie.Style.Name,
                         User = "McGroober"
                     });
                 }
