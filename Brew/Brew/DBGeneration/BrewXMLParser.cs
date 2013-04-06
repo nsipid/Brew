@@ -12,12 +12,11 @@ namespace Brew.DBGeneration
 {
     
     public class BrewXMLParser
-    {
-        /**
+    {        
         //
         // GET: /DB/
-             
-        public Models.Yeast ParseYeasts(XmlTextReader reader)
+
+        public Models.Yeast ParseYeasts(XmlTextReader reader, ref bool AddToSecondary)
         {
             Models.Yeast yeast = new Models.Yeast();
             var currentNodeName = "";
@@ -36,7 +35,7 @@ namespace Brew.DBGeneration
                                 break;
                             case "TYPE":
                                 Models.YeastType yeastType = new Models.YeastType() { Name = reader.Value };
-                                using (var context = new Models.UsersContext())
+                                using (var context = new Models.ModelsContext())
                                 {
                                     if (context.YeastTypes.Find(yeastType.Name) == null)
                                     {
@@ -48,7 +47,7 @@ namespace Brew.DBGeneration
                                 break;
                             case "FORM":
                                 Models.YeastForm yeastForm = new Models.YeastForm() { Name = reader.Value };
-                                using (var context = new Models.UsersContext())
+                                using (var context = new Models.ModelsContext())
                                 {
                                     if (context.YeastForms.Find(yeastForm.Name) == null)
                                     {
@@ -78,7 +77,7 @@ namespace Brew.DBGeneration
                                 break;
                             case "FLOCCULATION":
                                 Models.YeastFlocculation focculation = new Models.YeastFlocculation() { Name = reader.Value };
-                                using (var context = new Models.UsersContext())
+                                using (var context = new Models.ModelsContext())
                                 {
                                     if (context.YeastFlocculations.Find(focculation.Name) == null)
                                     {
@@ -95,7 +94,7 @@ namespace Brew.DBGeneration
                                 yeast.TimesCultured = int.Parse(reader.Value);
                                 break;
                            case "ADD_TO_SECONDARY":
-                                yeast.AddToSecondary = bool.Parse(reader.Value);
+                                AddToSecondary = bool.Parse(reader.Value);
                                 break;
                         }
                         break;
@@ -110,7 +109,7 @@ namespace Brew.DBGeneration
             return yeast;
         }
 
-        public Models.Fermentable ParseFermentable(XmlTextReader reader)
+        public Models.Fermentable ParseFermentable(XmlTextReader reader, ref bool AddAfterBoil, ref bool IsMashed)
         {
             Models.Fermentable fermentable = new Models.Fermentable();
             var currentNodeName = "";
@@ -129,7 +128,7 @@ namespace Brew.DBGeneration
                                 break;
                             case "TYPE":
                                 Models.FermentableType fermentableType = new Models.FermentableType() { Name = reader.Value};
-                                using (var context = new Models.UsersContext())
+                                using (var context = new Models.ModelsContext())
                                 {
                                     if (context.FermentableTypes.Find(fermentableType.Name) == null)
                                     {
@@ -150,7 +149,7 @@ namespace Brew.DBGeneration
                                 fermentable.Color = float.Parse(reader.Value);
                                 break;
                             case "ADD_AFTER_BOIL":
-                                fermentable.AddAfterBoil = bool.Parse(reader.Value);
+                                AddAfterBoil = bool.Parse(reader.Value);
                                 break;
                             case "ORIGIN":
                                 fermentable.Origin = reader.Value;
@@ -165,7 +164,7 @@ namespace Brew.DBGeneration
                                 fermentable.Protein = float.Parse(reader.Value);
                                 break;
                            case "IS_MASHED":
-                                fermentable.IsMashed = bool.Parse(reader.Value);
+                                IsMashed = bool.Parse(reader.Value);
                                 break;
                             case "IBU_GAL_PER_LB":
                                 fermentable.IBUs = float.Parse(reader.Value);
@@ -183,7 +182,7 @@ namespace Brew.DBGeneration
             return fermentable;
         }
 
-        public Models.Hop ParseHop(XmlTextReader reader)
+        public Models.Hop ParseHop(XmlTextReader reader, ref string HopUses_Name)
         {
             Models.Hop hop = new Models.Hop();
             var currentNodeName = "";
@@ -208,7 +207,7 @@ namespace Brew.DBGeneration
                                 break;
                             case "USE":
                                 Models.HopUse hopUse = new Models.HopUse() { Name = reader.Value };
-                                using (var context = new Models.UsersContext())
+                                using (var context = new Models.ModelsContext())
                                 {
                                     if (context.HopUses.Find(hopUse.Name) == null)
                                     {
@@ -216,14 +215,14 @@ namespace Brew.DBGeneration
                                         context.SaveChanges();
                                     }
                                 }
-                                hop.HopUses_Name = reader.Value;
+                                HopUses_Name = reader.Value;
                                 break;
                             case "TIME":
                                 hop.Time = float.Parse(reader.Value);
                                 break;
                            case "TYPE":
                                 Models.HopType hopType = new Models.HopType() { Name = reader.Value };
-                                using (var context = new Models.UsersContext())
+                                using (var context = new Models.ModelsContext())
                                 {
                                     if (context.HopTypes.Find(hopType.Name) == null)
                                     {
@@ -235,7 +234,7 @@ namespace Brew.DBGeneration
                                 break;
                             case "FORM":
                                 Models.HopForm hopForm = new Models.HopForm() { Name = reader.Value };
-                                using (var context = new Models.UsersContext())
+                                using (var context = new Models.ModelsContext())
                                 {
                                     if (context.HopForms.Find(hopForm.Name) == null)
                                     {
@@ -313,7 +312,7 @@ namespace Brew.DBGeneration
                                 break;
                             case "TYPE":
                                 Models.StyleType styleType = new Models.StyleType() { Name = reader.Value };
-                                using (var context = new Models.UsersContext())
+                                using (var context = new Models.ModelsContext())
                                 {
                                     if (context.StyleTypes.Find(styleType.Name) == null)
                                     {
@@ -418,7 +417,7 @@ namespace Brew.DBGeneration
                                 break;
                             case "STYLE":
                                 Models.Style style = ParseStyle(reader);
-                                using (var context = new Models.UsersContext())
+                                using (var context = new Models.ModelsContext())
                                 {
                                     if (context.Styles.Find(style.Name) == null)
                                     {
@@ -429,8 +428,14 @@ namespace Brew.DBGeneration
                                 recipe.Style = style;
                                 break;
                              case "HOP":
-                                Models.Hop hop = ParseHop(reader);
-                                using (var context = new Models.UsersContext())
+                                string HopUses_Name = "";
+                                Models.Hop hop = ParseHop(reader, ref HopUses_Name);
+                                Models.RecipeHop recipeHop = new Models.RecipeHop();
+                                recipeHop.Recipe_Name = recipe.Name;
+                                recipeHop.Hop_Name = hop.Name;
+                                recipeHop.HopUses_Name = HopUses_Name;
+
+                                using (var context = new Models.ModelsContext())
                                 {
                                     if (context.Hops.Find(hop.Name) == null)
                                     {
@@ -438,14 +443,24 @@ namespace Brew.DBGeneration
                                         context.SaveChanges();
                                     }
                                 }
-                                if (!recipe.Hops.Contains(hop))
+                                if (!recipe.RecipeHops.Contains(recipeHop))
                                 {
-                                    recipe.Hops.Add(hop);
+                                    recipe.RecipeHops.Add(recipeHop);
                                 }
                                 break;
                              case "FERMENTABLE":
-                                Models.Fermentable fermentable = ParseFermentable(reader);
-                                using (var context = new Models.UsersContext())
+                                bool AddAfterBoil = false;
+                                bool IsMashed = false;
+
+                                Models.Fermentable fermentable = ParseFermentable(reader, ref AddAfterBoil, ref IsMashed);
+                                
+                                Models.RecipeFermentable recipeFermentable = new Models.RecipeFermentable();
+                                recipeFermentable.AddAfterBoil = AddAfterBoil;
+                                recipeFermentable.IsMashed = IsMashed;
+                                recipeFermentable.Fermentable_Name = fermentable.Name;
+                                recipeFermentable.Recipe_Name = recipe.Name;
+                                
+                                using (var context = new Models.ModelsContext())
                                 {
                                     if (context.Fermentables.Find(fermentable.Name) == null)
                                     {
@@ -453,14 +468,22 @@ namespace Brew.DBGeneration
                                         context.SaveChanges();
                                     }                                   
                                 }
-                                if (!recipe.Fermentables.Contains(fermentable))
+                                
+                                if (!recipe.RecipeFermentables.Contains(recipeFermentable))
                                 {
-                                    recipe.Fermentables.Add(fermentable);
+                                    recipe.RecipeFermentables.Add(recipeFermentable);
                                 }
                                 break;
                              case "YEAST":
-                                Models.Yeast yeast = ParseYeasts(reader);
-                                using (var context = new Models.UsersContext())
+                                bool AddToSecondary = false;
+                                Models.Yeast yeast = ParseYeasts(reader, ref AddToSecondary);
+
+                                Models.RecipeYeast recipeYeast = new Models.RecipeYeast();
+                                recipeYeast.AddToSecondary = AddToSecondary;
+                                recipeYeast.Recipe_Name = recipe.Name;
+                                recipeYeast.Yeast_Name = yeast.Name;
+
+                                using (var context = new Models.ModelsContext())
                                 {
                                     if (context.Yeasts.Find(yeast.Name) == null)
                                     {
@@ -468,9 +491,9 @@ namespace Brew.DBGeneration
                                         context.SaveChanges();
                                     }
                                 }
-                                if (!recipe.Yeasts.Contains(yeast))
+                                if (!recipe.RecipeYeasts.Contains(recipeYeast))
                                 {
-                                    recipe.Yeasts.Add(yeast);
+                                    recipe.RecipeYeasts.Add(recipeYeast);
                                 }
                                 break;
                              case "MASH":
@@ -494,7 +517,7 @@ namespace Brew.DBGeneration
                                 break;
                             case "TYPE":
                                 Models.RecipieType recipieType = new Models.RecipieType() { Name = reader.Value };
-                                using (var context = new Models.UsersContext())
+                                using (var context = new Models.ModelsContext())
                                 {
                                     if (context.RecipieTypes.Find(recipieType.Name) == null)
                                     {
@@ -584,27 +607,27 @@ namespace Brew.DBGeneration
                     case XmlNodeType.EndElement:
                         if (reader.Name == "RECIPE" && recipe != null)
                         {
-                            using (var context = new Models.UsersContext())
+                            using (var context = new Models.ModelsContext())
                             {
                                 if (context.Recipes.Find(recipe.Name) == null)
                                 {
-                                    foreach (Models.Yeast yeast in recipe.Yeasts)
-                                    {                                        
-                                        context.Yeasts.Attach(yeast);
-                                        yeast.UsingRecipes.Add(recipe);                                
-                                    }
+                                    //foreach (Models.Yeast yeast in recipe.Yeasts)
+                                    //{                                        
+                                    //    context.Yeasts.Attach(yeast);
+                                    //    yeast.UsingRecipes.Add(recipe);                                
+                                    //}
 
-                                    foreach (Models.Fermentable fermentable in recipe.Fermentables)
-                                    {
-                                        context.Fermentables.Attach(fermentable);       
-                                        fermentable.UsingRecipes.Add(recipe);                                        
-                                    }
+                                    //foreach (Models.Fermentable fermentable in recipe.Fermentables)
+                                    //{
+                                    //    context.Fermentables.Attach(fermentable);       
+                                    //    fermentable.UsingRecipes.Add(recipe);                                        
+                                    //}
 
-                                    foreach (Models.Hop hop in recipe.Hops)
-                                    {
-                                        context.Hops.Attach(hop);
-                                        hop.UsingRecipes.Add(recipe);                                      
-                                    }
+                                    //foreach (Models.Hop hop in recipe.Hops)
+                                    //{
+                                    //    context.Hops.Attach(hop);
+                                    //    hop.UsingRecipes.Add(recipe);                                      
+                                    //}
 
                                     context.Styles.Attach(recipe.Style);
                                     recipe.Style.UsingRecipes.Add(recipe);
@@ -705,7 +728,7 @@ namespace Brew.DBGeneration
                                 break;
                             case "TYPE":
                                 Models.MashStepType mashStepType = new Models.MashStepType() { Name = reader.Value };
-                                using (var context = new Models.UsersContext())
+                                using (var context = new Models.ModelsContext())
                                 {
                                     if (context.MashStepTypes.Find(mashStepType.Name) == null)
                                     {
@@ -751,17 +774,9 @@ namespace Brew.DBGeneration
                
         public void Generate()
         {
-            //SimpleMembershipInitializer();
             ParseBeerXML("C:\\Projects\\Brew\\BeerXML\\btrecipes.xml");
-            //new Brew.DBGeneration.BrewXMLParser().Generate();
-            
-            // ParseHopXML("C:\\Projects\\Brew\\BeerXML\\Hops.xml");
-            // ParseYeastXML("C:\\Projects\\Brew\\BeerXML\\Yeast.xml");
-            // ParseFermentableXML("C:\\Projects\\Brew\\BeerXML\\Fermentables.xml");
-            // ParseStyleXML("C:\\Projects\\Brew\\BeerXML\\btrecipes.xml");
-            // ParseMashStepsXML("C:\\Projects\\Brew\\BeerXML\\btrecipes.xml");          
-        }
-         **/
+            //new Brew.DBGeneration.BrewXMLParser().Generate();  
+        }        
     }
 }
     

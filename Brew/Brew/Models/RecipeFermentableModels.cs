@@ -9,7 +9,7 @@ using System.Data.Entity;
 namespace Brew.Models
 {
     [Table("RecipeFermentables")]
-    public class RecipeFermentable
+    public class RecipeFermentable : IEquatable<RecipeFermentable>
     {
         [Key, Column(Order = 0), ForeignKey("Recipe")]
         public string Recipe_Name { get; set; }
@@ -22,6 +22,27 @@ namespace Brew.Models
         public bool AddAfterBoil { get; set; } // May be TRUE if this item is normally added after the boil.
 
         public virtual Fermentable Fermentable { get; set; }
-        public virtual Recipe Recipe { get; set; }      
+        public virtual Recipe Recipe { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as RecipeFermentable);
+        }
+
+        public bool Equals(RecipeFermentable other)
+        {
+            return (other.Recipe_Name == this.Recipe_Name) &&
+                (other.Fermentable_Name == this.Fermentable_Name) &&
+                (other.IsMashed == this.IsMashed) &&
+                (other.AddAfterBoil == this.AddAfterBoil);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Recipe_Name.GetHashCode() +
+                this.Fermentable_Name.GetHashCode() +
+               IsMashed.GetHashCode() + 
+               AddAfterBoil.GetHashCode();
+        }
     }
 }
