@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Data.Entity;
 
+using Brew.Utilities;
+
 namespace Brew.ViewModels.Recipes
 {
     public class RecipesViewModel : BaseLayoutViewModel
@@ -23,7 +25,7 @@ namespace Brew.ViewModels.Recipes
                 {                     
                     allBeers.Add(new BeerSummaryViewModel
                     {
-                        Abv = 10,                                 // from equation
+                        Abv = BrewCharacteristicAlgs.CalculateABV(recipie.OG, recipie.FG),                                 // from equation
                         AvgRating = (decimal)recipie.TasteRating, // average of all votes
                         SiteRating = (decimal)recipie.SiteRating, 
                         Color = recipie.Efficiency,

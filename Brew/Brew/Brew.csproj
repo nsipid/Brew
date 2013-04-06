@@ -186,6 +186,7 @@
     <Compile Include="Models\StyleModels.cs" />
     <Compile Include="Models\YeastModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\BrewCharacteristicAlgs.cs" />
     <Compile Include="ViewModels\BaseLayoutViewModel.cs" />
     <Compile Include="ViewModels\Ingredients\HopsViewModel.cs" />
     <Compile Include="ViewModels\Ingredients\FermentablesViewModel.cs" />
