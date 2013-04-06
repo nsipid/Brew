@@ -30,7 +30,7 @@ namespace Brew.ViewModels.Ingredients
                         UsedDuring = -1,
                         UsageTime = TimeSpan.FromMilliseconds(hop.Time),
                         Form = hop.HopForm.ToString(),
-                        Stability = -1
+                        Stability = (double)hop.HSI
                                              
                     });
                 }

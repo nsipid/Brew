@@ -46,13 +46,13 @@ namespace Brew.Models
     [Table("Style")]
     public class Style
     {
-        [Key]
+        [Key, StringLength(75)]
         public string Name { get; set; }
-        [Required]
+        [Required, StringLength(75)]
         public string Category { get; set; }
         [Required]
         public string CategoryNumber { get; set; } // Number or identifier associated with this style category.  
-        [Required]
+        [Required, StringLength(1)]
         public string StyleLetter { get; set; } // The specific style number or subcategory letter associated with this particular style.  
         [Required]
         public string StyleGuide { get; set; } // The name of the style guide that this particular style or category belongs to

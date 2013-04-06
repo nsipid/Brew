@@ -37,22 +37,23 @@ namespace Brew.Models
     [Table("MashStep")]
     public class MashStep
     {
-        [Key]
-        [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
+        [Key, DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int UID { get; set; }
+        [StringLength(75)]        
         public string Name { get; set; }
         [Required]
         public MashStepType MashStepType { get; set; }
-        public float InfuseAmount { get; set; } // The volume of water in liters to infuse in this step
-        [Required]
+        public float InfuseAmount { get; set; } // Volume (liters) The volume of water in liters to infuse in this step
+        [Required, Range(-50, 110)] 
         public float StepTemp { get; set; } // The target temperature for this step in degrees Celsius.
         [Required]
-        public float StepTime { get; set; } // The number of minutes to spend at this step
-        public float RampTime { get; set; } // Time in minutes to achieve the desired step temperature         
+        public float StepTime { get; set; } // Time in Minutes The number of minutes to spend at this step
+        public float RampTime { get; set; } // Time in Minutes to achieve the desired step temperature         
+        [Range(-50, 110)] 
         public float EndTemp { get; set; } // Temperature you can expect the mash to fall to after a long mash step.  Measured in degrees Celsius.
-        public float  InfuseTemp { get; set; }
-        public float DecoctionAmount { get; set; }
-
+        [Range(-50, 110)]
+        public float InfuseTemp { get; set; } // The calculated infusion temperature
+        public float DecoctionAmount { get; set; } // Volume of mash to decoct
         [Required]
         public int SequenceNumber { get; set; }
     }

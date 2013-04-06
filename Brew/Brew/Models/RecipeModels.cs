@@ -36,7 +36,7 @@ namespace Brew.Models
     [Table("Recipe")]
     public class Recipe
     {
-        [Key]
+        [Key, StringLength(75)]
         public string Name { get; set; }
         [Required]
         public RecipieType RecipieType { get; set; }
@@ -64,17 +64,23 @@ namespace Brew.Models
         public float FG { get; set; } // The measured final gravity of the finished beer.
         public int FermentationStages { get; set; } // The number of fermentation stages used – typically a number between one and three
         public float PrimayAge { get; set; } // Time spent in the primary in days
+        [Range(-50, 110)] 
         public float PrimayTemp { get; set; } // Temperature in degrees Celsius for the primary fermentation.
         public float SecondaryAge { get; set; } // Time spent in the secondary in days.
+        [Range(-50, 110)] 
         public float SecondaryTemp { get; set; } // Temperature in degrees Celsius for the secondary fermentation.
         public float TertiaryAge { get; set; } // Time spent in the tertiary in days.
+        [Range(-50, 110)] 
         public float TertiaryTemp { get; set; } // Temperature in degrees Celsius for the tertiary fermentation.
         public float Age { get; set; } // The time to age the beer in days after bottling.
+        [Range(-50, 110)] 
         public float AgeTemp { get; set; } // Temperature for aging the beer after bottling.
         public string Date { get; set; } // Date brewed 
         public float Carbonation { get; set; } // Floating point value corresponding to the target volumes of CO2 used to carbonate this beer.
         public bool ForcedCarbonation { get; set; } // TRUE if the batch was force carbonated using CO2 pressure, FALSE if the batch was carbonated using a priming agent.  
+        [StringLength(75)]
         public string PrimingSugarName { get; set; } // Text describing the priming agent such as “Honey” or “Corn Sugar” 
+        [Range(-50, 110)] 
         public float CarbonationTemp { get; set; } // The temperature for either bottling or forced carbonation.
         public float PrimingSugarEquiv { get; set; } // Factor used to convert this priming agent to an equivalent amount of corn sugar for a bottled scenario.  
         public float KegPrimingFactor { get; set; } // Used to factor in the smaller amount of sugar needed for large containers. 

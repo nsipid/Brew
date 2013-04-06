@@ -42,7 +42,7 @@ namespace Brew.Models
         }
 
         public static HopUse getHopUse(string dbValue)
-        {
+        {           
             switch (dbValue)
             {
                 case "Boil":
@@ -84,35 +84,42 @@ namespace Brew.Models
         Aroma
     }
 
-    // [StringLength(250)]
-    // [Key]
-    // [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
-    // public int UID { get; set; }
-
+    // System.ComponentModel.DataAnnotations.MaxLengthAttribute
+    //[StringLength(250)]
+   
     [Table("Hop")]
     public class Hop : IEquatable<Hop>
-    {        
-        [Key]        
+    {
+        [Key, StringLength(75)]        
         public string Name { get; set; }
-        [Required]
+        [Required, Range(0.0, 100)]
         public float Alpha { get; set; } // Percent alpha of hops - for example "5.5" represents 5.5% alpha
         [Required]
         public float Amount { get; set; } // Weight in Kilograms of the hops used in the recipe.
-        [Required]
+        [Required, EnumDataType(typeof(HopUse))]
         public HopUse HopUses { get; set; }
         [Required]
         public float Time { get; set; } // Meaning is dependent on the “USE” 
         public string Notes { get; set; }
+        [EnumDataType(typeof(HopType))]
         public HopType HopType { get; set; }
+        [EnumDataType(typeof(HopForm))]
         public HopForm HopForm { get; set; }
-        public float? Beta { get; set; } // Hop beta percentage - for example "4.4" denotes 4.4 % beta
-        public float? HSI { get; set; } // Hop Stability Index - defined as the percentage of hop alpha lost in 6 months of storage
+        [Range(0.0, 100)]
+        public float Beta { get; set; } // Hop beta percentage - for example "4.4" denotes 4.4 % beta
+        [Range(0.0, 100)]
+        public float HSI { get; set; } // Hop Stability Index - defined as the percentage of hop alpha lost in 6 months of storage
+        [StringLength(75)]
         public string Origin { get; set; } // Place of origin for the hops
         public string Substitutes { get; set; } // Substitutes that can be used for this hops
-        public float? Humulene { get; set; } // Humulene level in percent
-        public float? Caryophyllene { get; set; } // Caryophyllene level in percent
-        public float? Cohumulone { get; set; } // Cohumulone level in percent
-        public float? Myrcene { get; set; } // Myrcene level in percent
+        [Range(0.0, 100)]
+        public float Humulene { get; set; } // Humulene level in percent
+        [Range(0.0, 100)]
+        public float Caryophyllene { get; set; } // Caryophyllene level in percent
+        [Range(0.0, 100)]
+        public float Cohumulone { get; set; } // Cohumulone level in percent
+        [Range(0.0, 100)]
+        public float Myrcene { get; set; } // Myrcene level in percent
 
         public virtual ICollection<Recipe> UsingRecipes { get; set; }
 
