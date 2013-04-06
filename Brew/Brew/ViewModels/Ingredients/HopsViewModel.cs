@@ -12,7 +12,7 @@ namespace Brew.ViewModels.Ingredients
         public HopsViewModel(uint pageNo)
         {
             var allHops = new List<HopViewModel>();
-            using (var context = new Models.UsersContext())
+            using (var context = new Models.ModelsContext())
             {
                 var dbModel = (from r in context.Hops select r);
                 foreach (var hop in dbModel)

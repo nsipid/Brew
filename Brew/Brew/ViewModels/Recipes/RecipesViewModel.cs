@@ -16,7 +16,7 @@ namespace Brew.ViewModels.Recipes
         {
             SortBy = "hoppin";
             var allBeers = new List<BeerSummaryViewModel>();
-            using (var context = new Models.UsersContext())
+            using (var context = new Models.ModelsContext())
             {
                 var dbModel = (from r in context.Recipes.Include(p => p.Style) select r);
                 foreach (var recipie in dbModel)

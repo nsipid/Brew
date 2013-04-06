@@ -25,11 +25,11 @@ namespace Brew.Filters
         {
             public SimpleMembershipInitializer()
             {
-                Database.SetInitializer<UsersContext>(null);
+                Database.SetInitializer<ModelsContext>(null);
 
                 try
                 {
-                    using (var context = new UsersContext())
+                    using (var context = new ModelsContext())
                     {
                         if (!context.Database.Exists())
                         {

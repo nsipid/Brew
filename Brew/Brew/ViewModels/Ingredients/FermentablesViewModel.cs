@@ -12,7 +12,7 @@ namespace Brew.ViewModels.Ingredients
         public FermentablesViewModel(uint pageNo)
         {
             var allFermentables = new List<FermentableViewModel>();
-            using (var context = new Models.UsersContext())
+            using (var context = new Models.ModelsContext())
             {
                 var dbModel = (from r in context.Fermentables select r);
                 foreach (var fermentable in dbModel)
@@ -21,7 +21,7 @@ namespace Brew.ViewModels.Ingredients
                     {
                         Amount = fermentable.Amount.ToString(),
                         Color = fermentable.Color.ToString(),
-                        AddedAfterBoiling = fermentable.AddAfterBoil.ToString(),
+                        //AddedAfterBoiling = fermentable.AddAfterBoil.ToString(),
                         Yield = fermentable.Yield,
                         CourseGrainYield = fermentable.CoarseFineDiff                       
                     });
