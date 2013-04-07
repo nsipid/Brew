@@ -25,7 +25,7 @@ namespace Brew.ViewModels.Recipes
                 {                     
                     allBeers.Add(new BeerSummaryViewModel
                     {
-                        Abv = BrewCharacteristicAlgs.CalculateABV(recipie.OG, recipie.FG),                                 // from equation
+                        Abv = Math.Round(BrewCharacteristicAlgs.CalculateABV(recipie.OG, recipie.FG), 2),   // from equation
                         AvgRating = (decimal)recipie.TasteRating, // average of all votes
                         SiteRating = (decimal)recipie.SiteRating, 
                         Color = recipie.Efficiency,
