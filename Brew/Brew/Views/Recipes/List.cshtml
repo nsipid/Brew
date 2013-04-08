@@ -52,7 +52,7 @@
                     </div>
                 </td>
                 <td><img src="@Url.Action("Index", "BeerImage", new { id = beer.Id })"/></td>
-                <td>@Html.ActionLink(beer.Name, "Show", "Recipes", new {id = beer.Id}, null)</td>
+                <td>@Html.ActionLink(beer.Name, "Show", "Recipes", new {strBeerName = beer.Name}, null)</td> <!-- {id = beer.Id} -->
                 <td>@beer.Style</td>
                 <td>@beer.Abv%</td>
                 <td>@{@beer.Color}L</td>

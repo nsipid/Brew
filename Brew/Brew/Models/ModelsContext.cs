@@ -35,5 +35,8 @@ namespace Brew.Models
         public DbSet<MashProfile> MashProfiles { get; set; }
         public DbSet<Recipe> Recipes { get; set; }
         public DbSet<UserProfile> UserProfiles { get; set; }
+
+        public DbSet<Comment> Comments { get; set; }
+        public DbSet<FlavorProfile> FlavorProfiles { get; set; }
     }
 }

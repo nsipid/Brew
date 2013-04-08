@@ -30,6 +30,9 @@ namespace Brew.ViewModels.Recipes
 
         public List<FermentableViewModel> FermentablesUsed { get; set; }
 
+        public Dictionary<string, long> FlavorCounts { get; set; }
+        public long CommentsCount { get; set; }
+
         public DetailRecipeViewModel()
         {
             HopsUsed = new List<HopViewModel>()

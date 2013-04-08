@@ -6,7 +6,7 @@ using System.Web;
 
 namespace Brew.ViewModels.Recipes
 {
-    public abstract class RecipeViewModel : BaseLayoutViewModel
+    public class RecipeViewModel : BaseLayoutViewModel
     {
         public ulong BeerId { get; set; }
 

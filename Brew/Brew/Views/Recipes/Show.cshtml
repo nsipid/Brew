@@ -10,5 +10,1057 @@
     </nav>
 }
 
+<script>
+
+    var iFWCenterX = 300;
+    var iFWCenterY = 300;
+    var iFWMinR = 50;
+    var iFWMiddle1R = 137;
+    var iFWMiddle2R = 200;
+    var iFWMaxR = 300;
+
+    var strCOLOR_BLACK = "#000000";
+    var oRGB_LIGHTGRAY = new RGBTuple(0.975, 0.975, 0.975);
+    var oRGB_DARKGRAY = new RGBTuple(0.66, 0.66, 0.66);
+    var oRGB_BLACK = new RGBTuple(0.0, 0.0, 0.0);
+
+    var oRGB_FATTY = new RGBTuple(61 / 255, 199 / 255, 192 / 255);
+    var oRGB_SULFURY = new RGBTuple(60 / 255, 87 / 255, 200 / 255);
+    var oRGB_STALE = new RGBTuple(103 / 255, 75 / 255, 184 / 255);
+    var oRGB_ACIDIC = new RGBTuple(89 / 255, 66 / 255, 202 / 255);
+    var oRGB_SWEET = new RGBTuple(153 / 255, 72 / 255, 187 / 255);
+    var oRGB_MOUTHFEEL = new RGBTuple(202 / 255, 57 / 255, 126 / 255);
+    var oRGB_FULLNESS = new RGBTuple(242 / 255, 17 / 255, 39 / 255);
+    var oRGB_AROMATIC = new RGBTuple(226 / 255, 149 / 255, 33 / 255);
+    var oRGB_VEGETAL = new RGBTuple(86 / 255, 208 / 255, 51 / 255);
+    var oRGB_MAILLARD = new RGBTuple(89 / 255, 175 / 255, 104 / 255);
+    var oRGB_PHENOLITIC = new RGBTuple(72 / 255, 187 / 255, 121 / 255);
+
+    function renderFWSection(startRad, stopRad, startR, stopR,
+                 strStrokeColor, strFillColor, iCenterX, iCenterY, ctx) {
+        ctx.save();
+
+        ctx.beginPath();
+
+        //shape begins at innermost point
+        ctx.moveTo(xOnCircle(iCenterX, startR, startRad),
+               yOnCircle(iCenterY, startR, startRad));
+
+        //inner arc
+        ctx.arc(iCenterX,
+            iCenterY,
+            startR,
+            startRad,
+            stopRad);
+
+        //outer line to outer arc
+        ctx.lineTo(xOnCircle(iCenterX, stopR, stopRad),
+               yOnCircle(iCenterY, stopR, stopRad));
+
+        //inner line to inner arc
+        ctx.moveTo(xOnCircle(iCenterX, startR, startRad),
+               yOnCircle(iCenterY, startR, startRad));
+        ctx.lineTo(xOnCircle(iCenterX, startR, startRad),
+               yOnCircle(iCenterY, startR, startRad));
+
+        //outer arc
+        ctx.arc(iCenterX,
+            iCenterY,
+            stopR,
+            startRad,
+            stopRad);
+
+        //fill shape
+        ctx.fillStyle = strFillColor.getAsHexString();
+        ctx.fill();
+
+        //stroke path
+        ctx.strokeStyle = strStrokeColor.getAsHexString();
+        ctx.stroke();
+
+        ctx.restore();
+    }
+
+    //fills text for a flavor wheel slice parallel to slice center line
+    function fillFWSliceTextParallel(strText, fCenterSliceA, fCenterSliceR,
+                                     iCenterX, iCenterY, ctx) {
+        ctx.save();
+
+        //center origin on center of FW
+        ctx.translate(iCenterX, iCenterY);
+
+        //rotate to parallel angle
+        var fRadius = fCenterSliceR;
+        if (fCenterSliceA > Math.PI / 2 && fCenterSliceA < 3 * Math.PI / 2) {
+            ctx.rotate(Math.PI);
+            fRadius = -fRadius;
+        }
+        else
+            fRadius = fRadius;
+
+        ctx.rotate(fCenterSliceA);
+
+        //fill text
+        ctx.textAlign = "center";
+        ctx.textBaseline = 'middle';
+        ctx.fillText(strText, fRadius, 0);
+
+        ctx.restore();
+    }
+
+    //returns the x-coordinate of the point on the circle indicated by h, r, and theta
+    function xOnCircle(h, r, theta) {
+        return h + r * Math.cos(theta)
+    }
+
+    //returns the y-coordinate of the point on the circle indicated by k, r, and theta
+    function yOnCircle(k, r, theta) {
+        return k + r * Math.sin(theta)
+    }
+
+    //returns the hex value corresponding to the supplied RGB tuple
+    function rgbToHex(r, g, b) {
+        return "#" + ((1 << 24) + (Math.round(r * 255) << 16)
+                                + (Math.round(g * 255) << 8)
+                                + Math.round(b * 255)).toString(16).slice(1);
+    }
+
+    //uses 2-way barycentric interpolation to interpolate between the two rbg components provided
+    //and return the value that is 'percentBetween' distance from rgbComp1 along an imaginary line
+    //between the two components (the smaller the percentage, the "closer" the result matches rgbComp1)
+    function twoPtBInterpolation(rgbComp1, rgbComp2, fPercentBetween) {
+        return (1 - fPercentBetween) * rgbComp1 + fPercentBetween * rgbComp2;
+    }
+
+    function interpolateBetween(oRGB1, oRGB2, fPercentBetween) {
+        var r = twoPtBInterpolation(oRGB1.fRed, oRGB2.fRed, fPercentBetween);
+        var g = twoPtBInterpolation(oRGB1.fGreen, oRGB2.fGreen, fPercentBetween);
+        var b = twoPtBInterpolation(oRGB1.fBlue, oRGB2.fBlue, fPercentBetween);
+
+        return new RGBTuple(r, g, b);
+    }
+
+    //prototype function for constructing RGB tuples (0.0-1.0)
+    function RGBTuple(r, g, b) {
+        this.fRed = r;
+        this.fGreen = g;
+        this.fBlue = b;
+        this.getAsHexString = function () {
+            return rgbToHex(this.fRed, this.fGreen, this.fBlue);
+        };
+        this.getAsRGBString = function () {
+            return "(" + this.fRed + "," + this.fGreen + "," + this.fBlue + ")";
+        };
+    }
+
+    //prototype function for constructing flavor wheel slice objects
+    function SliceObj(name, fStartR, fEndR, fStartA, fEndA, oFillColorOn) {
+        //init basic members
+        this.name = name;
+        this.fStartR = fStartR;
+        this.fEndR = fEndR;
+        this.fCenterR = ((fEndR - fStartR) / 2) + fStartR;
+        this.fStartA = fStartA;
+        this.fEndA = fEndA;
+        if (fStartA < fEndA)
+            this.fCenterA = ((fEndA - fStartA) / 2) + fStartA;
+        else
+            this.fCenterA = fStartA + fEndA;
+        this.oFillColorOn = oFillColorOn;
+        this.oFillColorOff = oRGB_LIGHTGRAY;
+        this.oStrokeColorOn = oRGB_BLACK;
+        this.oStrokeColorOff = oRGB_DARKGRAY;
+        this.fPercentOn = 0.0;
+        this.oMiddleParent = "";
+        this.oInnerParent = "";
+
+        this.render = function (ctx, iCenterX, iCenterY, bDrawText) {
+            var oRGBFill = this.oFillColorOff;
+            var oRGBStroke = this.oStrokeColorOff;
+            if (this.fPercentOn > 0) {
+                oRGBFill = interpolateBetween(this.oFillColorOff,
+                                              this.oFillColorOn,
+                                              this.fPercentOn);
+                oRGBStroke = interpolateBetween(this.oStrokeColorOff,
+                                                this.oStrokeColorOn,
+                                                this.fPercentOn);
+            }
+
+            renderFWSection(this.fStartA, this.fEndA,
+                            this.fStartR, this.fEndR,
+                            oRGBStroke, oRGBFill,
+                            iCenterX, iCenterY,
+                            ctx);
+
+            if (bDrawText) {
+                fillFWSliceTextParallel(this.name,
+                    this.fCenterA, this.fCenterR,
+                    iCenterX, iCenterY, ctx);
+            }
+        };
+
+        this.setPctOn = function (fNewPctOn) {
+            if (this.oInnerParent != "")
+                this.oInnerParent.updateAggregatePctOn(this.fPercentOn,
+                                                       fNewPctOn);
+            if (this.oMiddleParent != "")
+                this.oMiddleParent.updateAggregatePctOn(this.fPercentOn,
+                                                        fNewPctOn);
+            this.fPercentOn = fNewPctOn;
+        }
+
+        this.updateAggregatePctOn = function (fOldPctOn, fNewPctOn) {
+            var fChange = fNewPctOn - fOldPctOn;
+            this.fPercentOn = this.fPercentOn + fChange;
+        };
+    }
+
+    //prototype function for constructing flavor wheel objects
+    function FlavorWheelObj(iMinR, iMidR1, iMidR2, iMaxR) {
+        //init slices array
+        var i = 0;
+        this.oSlices = new Array();
+
+        //inner quad 1
+        this.Blank1 = new SliceObj("", iMinR, iMidR1,
+                                   2 * Math.PI * 0.00, 2 * Math.PI * 0.01,
+                                   oRGB_FATTY);
+        this.oSlices[i++] = this.Blank1;
+        this.Blank2 = new SliceObj("", iMinR, iMidR1,
+                                   2 * Math.PI * 0.01, 2 * Math.PI * 0.02,
+                                   oRGB_FATTY);
+        this.oSlices[i++] = this.Blank2;
+        this.Oily = new SliceObj("Oily", iMinR, iMidR1,
+                                   2 * Math.PI * 0.02, 2 * Math.PI * 0.04,
+                                   oRGB_FATTY);
+        this.oSlices[i++] = this.Oily;
+        this.Sulfitic = new SliceObj("Sulfitic", iMinR, iMidR1,
+                                   2 * Math.PI * 0.04, 2 * Math.PI * 0.06,
+                                   oRGB_SULFURY);
+        this.oSlices[i++] = this.Sulfitic;
+        this.Sulfidic = new SliceObj("Sulfidic", iMinR, iMidR1,
+                                   2 * Math.PI * 0.06, 2 * Math.PI * 0.13,
+                                   oRGB_SULFURY);
+        this.oSlices[i++] = this.Sulfidic;
+        this.CookedVegetable = new SliceObj("Cooked Vegetable", iMinR, iMidR1,
+                                   2 * Math.PI * 0.13, 2 * Math.PI * 0.19,
+                                   oRGB_SULFURY);
+        this.oSlices[i++] = this.CookedVegetable;
+        this.Blank3 = new SliceObj("", iMinR, iMidR1,
+                                   2 * Math.PI * 0.19, 2 * Math.PI * 0.20,
+                                   oRGB_SULFURY);
+        this.oSlices[i++] = this.Blank3;
+        this.Blank4 = new SliceObj("", iMinR, iMidR1,
+                                   2 * Math.PI * 0.20, 2 * Math.PI * 0.21,
+                                   oRGB_STALE);
+        this.oSlices[i++] = this.Blank4;
+        this.Blank5 = new SliceObj("", iMinR, iMidR1,
+                                   2 * Math.PI * 0.21, 2 * Math.PI * 0.22,
+                                   oRGB_STALE);
+        this.oSlices[i++] = this.Blank5;
+        this.Blank6 = new SliceObj("", iMinR, iMidR1,
+                                   2 * Math.PI * 0.22, 2 * Math.PI * 0.23,
+                                   oRGB_STALE);
+        this.oSlices[i++] = this.Blank6;
+        this.Moldy = new SliceObj("Moldy", iMinR, iMidR1,
+                                   2 * Math.PI * 0.23, 2 * Math.PI * 0.25,
+                                   oRGB_STALE);
+        this.oSlices[i++] = this.Moldy;
+
+        //inner quad 2
+        this.Blank7 = new SliceObj("", iMinR, iMidR1,
+                                   2 * Math.PI * 0.35, 2 * Math.PI * 0.36,
+                                   oRGB_MOUTHFEEL);
+        this.oSlices[i++] = this.Blank7;
+        this.Blank8 = new SliceObj("", iMinR, iMidR1,
+                                   2 * Math.PI * 0.36, 2 * Math.PI * 0.37,
+                                   oRGB_MOUTHFEEL);
+        this.oSlices[i++] = this.Blank8;
+        this.Blank9 = new SliceObj("", iMinR, iMidR1,
+                                   2 * Math.PI * 0.37, 2 * Math.PI * 0.38,
+                                   oRGB_MOUTHFEEL);
+        this.oSlices[i++] = this.Blank9;
+        this.Astringent = new SliceObj("Astringent", iMinR, iMidR1,
+                                   2 * Math.PI * 0.38, 2 * Math.PI * 0.41,
+                                   oRGB_MOUTHFEEL);
+        this.oSlices[i++] = this.Astringent;
+        this.Blank10 = new SliceObj("", iMinR, iMidR1,
+                                   2 * Math.PI * 0.41, 2 * Math.PI * 0.42,
+                                   oRGB_MOUTHFEEL);
+        this.oSlices[i++] = this.Blank10;
+        this.Carbonation = new SliceObj("Carbonation", iMinR, iMidR1,
+                                   2 * Math.PI * 0.42, 2 * Math.PI * 0.44,
+                                   oRGB_MOUTHFEEL);
+        this.oSlices[i++] = this.Carbonation;
+        this.Warming = new SliceObj("Warming", iMinR, iMidR1,
+                                   2 * Math.PI * 0.44, 2 * Math.PI * 0.46,
+                                   oRGB_MOUTHFEEL);
+        this.oSlices[i++] = this.Warming;
+        this.Body = new SliceObj("Body", iMinR, iMidR1,
+                                   2 * Math.PI * 0.46, 2 * Math.PI * 0.50,
+                                   oRGB_FULLNESS);
+        this.oSlices[i++] = this.Body;
+
+        //inner quad 3
+        this.AlcoholicI = new SliceObj("Alcoholic", iMinR, iMidR1,
+                                   2 * Math.PI * 0.50, 2 * Math.PI * 0.52,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.AlcoholicI;
+        this.SolventLike = new SliceObj("Solvent-Like", iMinR, iMidR1,
+                                   2 * Math.PI * 0.52, 2 * Math.PI * 0.55,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.SolventLike;
+        this.Estery = new SliceObj("Estery", iMinR, iMidR1,
+                                   2 * Math.PI * 0.55, 2 * Math.PI * 0.58,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.Estery;
+        this.Fruity = new SliceObj("Fruity", iMinR, iMidR1,
+                                   2 * Math.PI * 0.58, 2 * Math.PI * 0.66,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.Fruity;
+        this.Blank11 = new SliceObj("", iMinR, iMidR1,
+                                   2 * Math.PI * 0.66, 2 * Math.PI * 0.67,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.Blank11;
+        this.Floral = new SliceObj("Floral", iMinR, iMidR1,
+                                   2 * Math.PI * 0.67, 2 * Math.PI * 0.70,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.Floral;
+        this.Hoppy = new SliceObj("Hoppy", iMinR, iMidR1,
+                                   2 * Math.PI * 0.70, 2 * Math.PI * 0.73,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.Hoppy;
+        this.Resinous = new SliceObj("Resinous", iMinR, iMidR1,
+                                   2 * Math.PI * 0.73, 2 * Math.PI * 0.75,
+                                   oRGB_VEGETAL);
+        this.oSlices[i++] = this.Resinous;
+
+        //inner quad 4
+        this.Nutty = new SliceObj("Nutty", iMinR, iMidR1,
+                                   2 * Math.PI * 0.75, 2 * Math.PI * 0.79,
+                                   oRGB_VEGETAL);
+        this.oSlices[i++] = this.Nutty;
+        this.Grassy = new SliceObj("Grassy", iMinR, iMidR1,
+                                   2 * Math.PI * 0.79, 2 * Math.PI * 0.81,
+                                   oRGB_VEGETAL);
+        this.oSlices[i++] = this.Grassy;
+        this.Grainy = new SliceObj("Grainy", iMinR, iMidR1,
+                                   2 * Math.PI * 0.81, 2 * Math.PI * 0.84,
+                                   oRGB_VEGETAL);
+        this.oSlices[i++] = this.Grainy;
+        this.Blank12 = new SliceObj("", iMinR, iMidR1,
+                                   2 * Math.PI * 0.84, 2 * Math.PI * 0.85,
+                                   oRGB_VEGETAL);
+        this.oSlices[i++] = this.Blank12;
+        this.Blank13 = new SliceObj("", iMinR, iMidR1,
+                                   2 * Math.PI * 0.85, 2 * Math.PI * 0.86,
+                                   oRGB_VEGETAL);
+        this.oSlices[i++] = this.Blank13;
+        this.Caramel = new SliceObj("Caramel", iMinR, iMidR1,
+                                   2 * Math.PI * 0.86, 2 * Math.PI * 0.88,
+                                   oRGB_MAILLARD);
+        this.oSlices[i++] = this.Caramel;
+        this.Burnt = new SliceObj("Burnt", iMinR, iMidR1,
+                                   2 * Math.PI * 0.88, 2 * Math.PI * 0.91,
+                                   oRGB_MAILLARD);
+        this.oSlices[i++] = this.Burnt;
+        this.FattyAcid = new SliceObj("FattyAcid", iMinR, iMidR1,
+                                   2 * Math.PI * 0.96, 2 * Math.PI * 1.00,
+                                   oRGB_FATTY);
+        this.oSlices[i++] = this.FattyAcid;
+
+        //middle tier
+        this.Fatty = new SliceObj("Fatty", iMidR1, iMidR2,
+                                   2 * Math.PI * 0.96, 2 * Math.PI * 0.04,
+                                   oRGB_FATTY);
+        this.oSlices[i++] = this.Fatty;
+        this.Sulfury = new SliceObj("Sulfury", iMidR1, iMidR2,
+                                   2 * Math.PI * 0.04, 2 * Math.PI * 0.20,
+                                   oRGB_SULFURY);
+        this.oSlices[i++] = this.Sulfury;
+        this.Stale = new SliceObj("Stale", iMidR1, iMidR2,
+                                   2 * Math.PI * 0.20, 2 * Math.PI * 0.25,
+                                   oRGB_STALE);
+        this.oSlices[i++] = this.Stale;
+        this.Acidic = new SliceObj("Acidic", iMinR, iMidR2,
+                                   2 * Math.PI * 0.25, 2 * Math.PI * 0.27,
+                                   oRGB_ACIDIC);
+        this.oSlices[i++] = this.Acidic;
+        this.Sweet = new SliceObj("Sweet", iMinR, iMidR2,
+                                   2 * Math.PI * 0.27, 2 * Math.PI * 0.33,
+                                   oRGB_SWEET);
+        this.oSlices[i++] = this.Sweet;
+        this.Mouthfeel = new SliceObj("Mouthfeel", iMidR1, iMidR2,
+                                   2 * Math.PI * 0.35, 2 * Math.PI * 0.46,
+                                   oRGB_MOUTHFEEL);
+        this.oSlices[i++] = this.Mouthfeel;
+        this.Fullness = new SliceObj("Fullness", iMidR1, iMidR2,
+                                   2 * Math.PI * 0.46, 2 * Math.PI * 0.50,
+                                   oRGB_FULLNESS);
+        this.oSlices[i++] = this.Fullness;
+        this.Aromatic = new SliceObj("Aromatic", iMidR1, iMidR2,
+                                   2 * Math.PI * 0.50, 2 * Math.PI * 0.73,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.Aromatic;
+        this.Vegetal = new SliceObj("Vegetal", iMidR1, iMidR2,
+                                   2 * Math.PI * 0.73, 2 * Math.PI * 0.81,
+                                   oRGB_VEGETAL);
+        this.oSlices[i++] = this.Vegetal;
+        this.Cereal = new SliceObj("Cereal", iMidR1, iMidR2,
+                                   2 * Math.PI * 0.81, 2 * Math.PI * 0.86,
+                                   oRGB_MAILLARD);
+        this.oSlices[i++] = this.Cereal;
+        this.Maillard = new SliceObj("Maillard", iMidR1, iMidR2,
+                                   2 * Math.PI * 0.86, 2 * Math.PI * 0.91,
+                                   oRGB_VEGETAL);
+        this.oSlices[i++] = this.Maillard;
+        this.Phenolic = new SliceObj("Phenolic", iMinR, iMidR2,
+                                   2 * Math.PI * 0.91, 2 * Math.PI * 0.96,
+                                   oRGB_PHENOLITIC);
+        this.oSlices[i++] = this.Phenolic;
+
+        //outer quad 1
+        var fStartPercent = 0.00;
+        var fEndPercent = 0.01;
+
+        this.Diacetyl = new SliceObj("Diacetyl", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_FATTY);
+        this.oSlices[i++] = this.Diacetyl;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Rancid = new SliceObj("Rancid", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_FATTY);
+        this.oSlices[i++] = this.Rancid;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.VegetableOil = new SliceObj("Vegetable Oil", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_FATTY);
+        this.oSlices[i++] = this.VegetableOil;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.MineralOil = new SliceObj("Mineral Oil", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_FATTY);
+        this.oSlices[i++] = this.MineralOil;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.StrikingMatch = new SliceObj("Striking Match", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_SULFURY);
+        this.oSlices[i++] = this.StrikingMatch;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Meaty = new SliceObj("Meaty", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_SULFURY);
+        this.oSlices[i++] = this.Meaty;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.HydrogenSulfide = new SliceObj("Hydrogen Sulfide", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_SULFURY);
+        this.oSlices[i++] = this.HydrogenSulfide;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Mercaptan = new SliceObj("Mercaptan", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_SULFURY);
+        this.oSlices[i++] = this.Mercaptan;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Garlic = new SliceObj("Garlic", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_SULFURY);
+        this.oSlices[i++] = this.Garlic;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Lightstruck = new SliceObj("Lightstruck", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_SULFURY);
+        this.oSlices[i++] = this.Lightstruck;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Autolysed = new SliceObj("Autolysed", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_SULFURY);
+        this.oSlices[i++] = this.Autolysed;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.BurntRubber = new SliceObj("Burnt Rubber", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_SULFURY);
+        this.oSlices[i++] = this.BurntRubber;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.ShrimpLike = new SliceObj("Shrimp-Like", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_SULFURY);
+        this.oSlices[i++] = this.ShrimpLike;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.ParsnipCelery = new SliceObj("Parsnip/Celery", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_SULFURY);
+        this.oSlices[i++] = this.ParsnipCelery;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.DimethylSulfide = new SliceObj("Dimethyl Sulfide", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_SULFURY);
+        this.oSlices[i++] = this.DimethylSulfide;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.CookedCabbage = new SliceObj("Cooked Cabbage", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_SULFURY);
+        this.oSlices[i++] = this.CookedCabbage;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.CookedSweetCorn = new SliceObj("Cooked Sweet Corn", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_SULFURY);
+        this.oSlices[i++] = this.CookedSweetCorn;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.CookedTomato = new SliceObj("Cooked Tomato", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_SULFURY);
+        this.oSlices[i++] = this.CookedTomato;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.CookedOnion = new SliceObj("Cooked Onion", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_SULFURY);
+        this.oSlices[i++] = this.CookedOnion;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Yeasty = new SliceObj("Yeasty", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_SULFURY);
+        this.oSlices[i++] = this.Yeasty;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Catty = new SliceObj("Catty", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_STALE);
+        this.oSlices[i++] = this.Catty;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Papery = new SliceObj("Papery", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_STALE);
+        this.oSlices[i++] = this.Papery;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Leathery = new SliceObj("Leathery", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_STALE);
+        this.oSlices[i++] = this.Leathery;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Earthy = new SliceObj("Earthy", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_STALE);
+        this.oSlices[i++] = this.Earthy;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Musty = new SliceObj("Musty", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_STALE);
+        this.oSlices[i++] = this.Musty;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+
+        //outer quad 2
+        this.Acetic = new SliceObj("Acetic", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_ACIDIC);
+        this.oSlices[i++] = this.Acetic;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Sour = new SliceObj("Sour", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_ACIDIC);
+        this.oSlices[i++] = this.Sour;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Honey = new SliceObj("Honey", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_SWEET);
+        this.oSlices[i++] = this.Honey;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.JamLike = new SliceObj("Jam-Like", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_SWEET);
+        this.oSlices[i++] = this.JamLike;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Vanilla = new SliceObj("Vanilla", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_SWEET);
+        this.oSlices[i++] = this.Vanilla;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Primings = new SliceObj("Primings", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_SWEET);
+        this.oSlices[i++] = this.Primings;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Syrupy = new SliceObj("Syrupy", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_SWEET);
+        this.oSlices[i++] = this.Syrupy;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Oversweet = new SliceObj("Oversweet", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_SWEET);
+        this.oSlices[i++] = this.Oversweet;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Salty = new SliceObj("Salty", iMinR, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_SWEET);
+        this.oSlices[i++] = this.Salty;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Bitter = new SliceObj("Bitter", iMinR, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_SWEET);
+        this.oSlices[i++] = this.Bitter;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Alkaline = new SliceObj("Alkaline", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_MOUTHFEEL);
+        this.oSlices[i++] = this.Alkaline;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Mouthcoating = new SliceObj("Mouthcoating", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_MOUTHFEEL);
+        this.oSlices[i++] = this.Mouthcoating;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Metallic = new SliceObj("Metallic", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_MOUTHFEEL);
+        this.oSlices[i++] = this.Metallic;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Drying = new SliceObj("Drying", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_MOUTHFEEL);
+        this.oSlices[i++] = this.Drying;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Tart = new SliceObj("Tart", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_MOUTHFEEL);
+        this.oSlices[i++] = this.Tart;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Puckering = new SliceObj("Puckering", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_MOUTHFEEL);
+        this.oSlices[i++] = this.Puckering;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Powdery = new SliceObj("Powdery", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_MOUTHFEEL);
+        this.oSlices[i++] = this.Powdery;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Flat = new SliceObj("Flat", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_MOUTHFEEL);
+        this.oSlices[i++] = this.Flat;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Gassy = new SliceObj("Gassy", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_MOUTHFEEL);
+        this.oSlices[i++] = this.Gassy;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Alcoholic = new SliceObj("Alcoholic", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_MOUTHFEEL);
+        this.oSlices[i++] = this.Alcoholic;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Piquant = new SliceObj("Piquant", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_MOUTHFEEL);
+        this.oSlices[i++] = this.Piquant;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Watery = new SliceObj("Watery", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_FULLNESS);
+        this.oSlices[i++] = this.Watery;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Characterless = new SliceObj("Characterless", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_FULLNESS);
+        this.oSlices[i++] = this.Characterless;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Satiating = new SliceObj("Satiating", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_FULLNESS);
+        this.oSlices[i++] = this.Satiating;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Thick = new SliceObj("Thick", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_FULLNESS);
+        this.oSlices[i++] = this.Thick;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+
+        //outer quad 3
+        this.Spicy = new SliceObj("Spicy", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.Spicy;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Vinous = new SliceObj("Vinous", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.Vinous;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Plastics = new SliceObj("Plastics", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.Plastics;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Canliner = new SliceObj("Can-liner", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.Canliner;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Laquerlike = new SliceObj("Laquer-like", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.Laquerlike;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.IsoamylAcetate = new SliceObj("Isoamyl Acetate", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.IsoamylAcetate;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.EthylHexanoate = new SliceObj("Ethyl Hexanoate", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.EthylHexanoate;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.EthylAcetate = new SliceObj("Ethyl Acetate", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.EthylAcetate;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Citrus = new SliceObj("Citrus", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.Citrus;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Apple = new SliceObj("Apple", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.Apple;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Banana = new SliceObj("Banana", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.Banana;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.BlackCurrant = new SliceObj("Black Currant", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.BlackCurrant;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Melony = new SliceObj("Melony", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.Melony;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Pear = new SliceObj("Pear", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.Pear;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Raspberry = new SliceObj("Raspberry", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.Raspberry;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Strawberry = new SliceObj("Strawberry", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.Strawberry;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Acetaldehyde = new SliceObj("Acetaldehyde", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.Acetaldehyde;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.TwoPhenylethanol = new SliceObj("Two-Phenylethanol", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.TwoPhenylethanol;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Geraniol = new SliceObj("Geraniol", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.Geraniol;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Perfumy = new SliceObj("Perfumy", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.Perfumy;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.KettleHop = new SliceObj("Kettle-Hop", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.KettleHop;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.DryHop = new SliceObj("Dry-Hop", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.DryHop;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.HopOil = new SliceObj("Hop Oil", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_AROMATIC);
+        this.oSlices[i++] = this.HopOil;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Piney = new SliceObj("Piney", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_VEGETAL);
+        this.oSlices[i++] = this.Piney;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Woody = new SliceObj("Woody", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_VEGETAL);
+        this.oSlices[i++] = this.Woody;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+
+        //outer quad 4
+        this.Walnut = new SliceObj("Walnut", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_VEGETAL);
+        this.oSlices[i++] = this.Walnut;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Coconut = new SliceObj("Coconut", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_VEGETAL);
+        this.oSlices[i++] = this.Coconut;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Beany = new SliceObj("Beany", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_VEGETAL);
+        this.oSlices[i++] = this.Beany;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Almond = new SliceObj("Almond", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_VEGETAL);
+        this.oSlices[i++] = this.Almond;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.FreshlyCutGrass = new SliceObj("Freshly Cut Grass", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_VEGETAL);
+        this.oSlices[i++] = this.FreshlyCutGrass;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.StrawLike = new SliceObj("Straw-Like", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_VEGETAL);
+        this.oSlices[i++] = this.StrawLike;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Husky = new SliceObj("Husky", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_VEGETAL);
+        this.oSlices[i++] = this.Husky;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.CornGrits = new SliceObj("Corn Grits", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_VEGETAL);
+        this.oSlices[i++] = this.CornGrits;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Mealy = new SliceObj("Mealy", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_VEGETAL);
+        this.oSlices[i++] = this.Mealy;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Malty = new SliceObj("Malty", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_VEGETAL);
+        this.oSlices[i++] = this.Malty;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Worty = new SliceObj("Worty", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_VEGETAL);
+        this.oSlices[i++] = this.Worty;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Molasses = new SliceObj("Molasses", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_MAILLARD);
+        this.oSlices[i++] = this.Molasses;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Licorice = new SliceObj("Licorice", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_MAILLARD);
+        this.oSlices[i++] = this.Licorice;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.BreadCrust = new SliceObj("Bread Crust", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_MAILLARD);
+        this.oSlices[i++] = this.BreadCrust;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.RoastBarley = new SliceObj("Roast Barley", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_MAILLARD);
+        this.oSlices[i++] = this.RoastBarley;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Smoky = new SliceObj("Smoky", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_MAILLARD);
+        this.oSlices[i++] = this.Smoky;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Tarry = new SliceObj("Tarry", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_PHENOLITIC);
+        this.oSlices[i++] = this.Tarry;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Bakelite = new SliceObj("Bakelite", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_PHENOLITIC);
+        this.oSlices[i++] = this.Bakelite;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Carbolic = new SliceObj("Carbolic", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_PHENOLITIC);
+        this.oSlices[i++] = this.Carbolic;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Chlorophenol = new SliceObj("Chlorophenol", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_PHENOLITIC);
+        this.oSlices[i++] = this.Chlorophenol;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Isodoform = new SliceObj("Isodoform", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_PHENOLITIC);
+        this.oSlices[i++] = this.Isodoform;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Caprylic = new SliceObj("Caprylic", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_FATTY);
+        this.oSlices[i++] = this.Caprylic;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Cheesy = new SliceObj("Cheesy", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_FATTY);
+        this.oSlices[i++] = this.Cheesy;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Isovaleric = new SliceObj("Isovaleric", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_FATTY);
+        this.oSlices[i++] = this.Isovaleric;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+        this.Butyric = new SliceObj("Butyric", iMidR2, iMaxR,
+                                   2 * Math.PI * fStartPercent, 2 * Math.PI * fEndPercent,
+                                   oRGB_FATTY);
+        this.oSlices[i++] = this.Butyric;
+        fStartPercent = fEndPercent; fEndPercent = fEndPercent + 0.01;
+
+        //now add parent relationships to outer ring	
+        //(starting with "Fatty" flavors, going CW around outer ring)
+        this.Caprylic.oMiddleParent = this.Fatty; this.Caprylic.oInnerParent = this.FattyAcid;
+        this.Cheesy.oMiddleParent = this.Fatty; this.Cheesy.oInnerParent = this.FattyAcid;
+        this.Isovaleric.oMiddleParent = this.Fatty; this.Isovaleric.oInnerParent = this.FattyAcid;
+        this.Butyric.oMiddleParent = this.Fatty; this.Butyric.oInnerParent = this.FattyAcid;
+        this.Diacetyl.oMiddleParent = this.Fatty; this.Diacetyl.oInnerParent = this.Blank1;
+        this.Rancid.oMiddleParent = this.Fatty; this.Rancid.oInnerParent = this.Blank2;
+        this.VegetableOil.oMiddleParent = this.Fatty; this.VegetableOil.oInnerParent = this.Oily;
+        this.MineralOil.oMiddleParent = this.Fatty; this.MineralOil.oInnerParent = this.Oily;
+        this.StrikingMatch.oMiddleParent = this.Sulfury; this.StrikingMatch.oInnerParent = this.Sulfitic;
+        this.Meaty.oMiddleParent = this.Sulfury; this.Meaty.oInnerParent = this.Sulfitic;
+        this.HydrogenSulfide.oMiddleParent = this.Sulfury; this.HydrogenSulfide.oInnerParent = this.Sulfidic;
+        this.Mercaptan.oMiddleParent = this.Sulfury; this.Mercaptan.oInnerParent = this.Sulfidic;
+        this.Garlic.oMiddleParent = this.Sulfury; this.Garlic.oInnerParent = this.Sulfidic;
+        this.Lightstruck.oMiddleParent = this.Sulfury; this.Lightstruck.oInnerParent = this.Sulfidic;
+        this.Autolysed.oMiddleParent = this.Sulfury; this.Autolysed.oInnerParent = this.Sulfidic;
+        this.BurntRubber.oMiddleParent = this.Sulfury; this.BurntRubber.oInnerParent = this.Sulfidic;
+        this.ShrimpLike.oMiddleParent = this.Sulfury; this.ShrimpLike.oInnerParent = this.Sulfidic;
+        this.ParsnipCelery.oMiddleParent = this.Sulfury; this.ParsnipCelery.oInnerParent = this.CookedVegetable;
+        this.DimethylSulfide.oMiddleParent = this.Sulfury; this.DimethylSulfide.oInnerParent = this.CookedVegetable;
+        this.CookedCabbage.oMiddleParent = this.Sulfury; this.CookedCabbage.oInnerParent = this.CookedVegetable;
+        this.CookedSweetCorn.oMiddleParent = this.Sulfury; this.CookedSweetCorn.oInnerParent = this.CookedVegetable;
+        this.CookedTomato.oMiddleParent = this.Sulfury; this.CookedTomato.oInnerParent = this.CookedVegetable;
+        this.CookedOnion.oMiddleParent = this.Sulfury; this.CookedOnion.oInnerParent = this.CookedVegetable;
+        this.Yeasty.oMiddleParent = this.Sulfury; this.Yeasty.oInnerParent = this.Blank3;
+        this.Catty.oMiddleParent = this.Stale; this.Catty.oInnerParent = this.Blank4;
+        this.Papery.oMiddleParent = this.Stale; this.Papery.oInnerParent = this.Blank5;
+        this.Leathery.oMiddleParent = this.Stale; this.Leathery.oInnerParent = this.Blank6;
+        this.Earthy.oMiddleParent = this.Stale; this.Earthy.oInnerParent = this.Moldy;
+        this.Musty.oMiddleParent = this.Stale; this.Musty.oInnerParent = this.Moldy;
+        this.Acetic.oMiddleParent = this.Acidic; this.Acetic.oInnerParent = "";
+        this.Sour.oMiddleParent = this.Acidic; this.Sour.oInnerParent = "";
+        this.Honey.oMiddleParent = this.Sweet; this.Honey.oInnerParent = "";
+        this.JamLike.oMiddleParent = this.Sweet; this.JamLike.oInnerParent = "";
+        this.Vanilla.oMiddleParent = this.Sweet; this.Vanilla.oInnerParent = "";
+        this.Primings.oMiddleParent = this.Sweet; this.Primings.oInnerParent = "";
+        this.Syrupy.oMiddleParent = this.Sweet; this.Syrupy.oInnerParent = "";
+        this.Oversweet.oMiddleParent = this.Sweet; this.Oversweet.oInnerParent = "";
+        //skip salty and bitter, no parents
+        this.Alkaline.oMiddleParent = this.Mouthfeel; this.Alkaline.oInnerParent = this.Blank7;
+        this.Mouthcoating.oMiddleParent = this.Mouthfeel; this.Mouthcoating.oInnerParent = this.Blank8;
+        this.Metallic.oMiddleParent = this.Mouthfeel; this.Metallic.oInnerParent = this.Blank9;
+        this.Drying.oMiddleParent = this.Mouthfeel; this.Drying.oInnerParent = this.Astringent;
+        this.Tart.oMiddleParent = this.Mouthfeel; this.Tart.oInnerParent = this.Astringent;
+        this.Puckering.oMiddleParent = this.Mouthfeel; this.Puckering.oInnerParent = this.Astringent;
+        this.Powdery.oMiddleParent = this.Mouthfeel; this.Powdery.oInnerParent = this.Blank10;
+        this.Flat.oMiddleParent = this.Mouthfeel; this.Flat.oInnerParent = this.Carbonation;
+        this.Gassy.oMiddleParent = this.Mouthfeel; this.Gassy.oInnerParent = this.Carbonation;
+        this.Alcoholic.oMiddleParent = this.Mouthfeel; this.Alcoholic.oInnerParent = this.Warming;
+        this.Piquant.oMiddleParent = this.Mouthfeel; this.Piquant.oInnerParent = this.Warming;
+        this.Watery.oMiddleParent = this.Fullness; this.Watery.oInnerParent = this.Body;
+        this.Characterless.oMiddleParent = this.Fullness; this.Characterless.oInnerParent = this.Body;
+        this.Satiating.oMiddleParent = this.Fullness; this.Satiating.oInnerParent = this.Body;
+        this.Thick.oMiddleParent = this.Fullness; this.Thick.oInnerParent = this.Body;
+        this.Spicy.oMiddleParent = this.Aromatic; this.Spicy.oInnerParent = this.AlcoholicI;
+        this.Vinous.oMiddleParent = this.Aromatic; this.Vinous.oInnerParent = this.AlcoholicI;
+        this.Plastics.oMiddleParent = this.Aromatic; this.Plastics.oInnerParent = this.SolventLike;
+        this.Canliner.oMiddleParent = this.Aromatic; this.Canliner.oInnerParent = this.SolventLike;
+        this.Laquerlike.oMiddleParent = this.Aromatic; this.Laquerlike.oInnerParent = this.SolventLike;
+        this.IsoamylAcetate.oMiddleParent = this.Aromatic; this.IsoamylAcetate.oInnerParent = this.Estery;
+        this.EthylHexanoate.oMiddleParent = this.Aromatic; this.EthylHexanoate.oInnerParent = this.Estery;
+        this.EthylAcetate.oMiddleParent = this.Aromatic; this.EthylAcetate.oInnerParent = this.Estery;
+        this.Citrus.oMiddleParent = this.Aromatic; this.Citrus.oInnerParent = this.Fruity;
+        this.Apple.oMiddleParent = this.Aromatic; this.Apple.oInnerParent = this.Fruity;
+        this.Banana.oMiddleParent = this.Aromatic; this.Banana.oInnerParent = this.Fruity;
+        this.BlackCurrant.oMiddleParent = this.Aromatic; this.BlackCurrant.oInnerParent = this.Fruity;
+        this.Melony.oMiddleParent = this.Aromatic; this.Melony.oInnerParent = this.Fruity;
+        this.Pear.oMiddleParent = this.Aromatic; this.Pear.oInnerParent = this.Fruity;
+        this.Raspberry.oMiddleParent = this.Aromatic; this.Raspberry.oInnerParent = this.Fruity;
+        this.Strawberry.oMiddleParent = this.Aromatic; this.Strawberry.oInnerParent = this.Fruity;
+        this.Acetaldehyde.oMiddleParent = this.Aromatic; this.Acetaldehyde.oInnerParent = this.Blank11;
+        this.TwoPhenylethanol.oMiddleParent = this.Aromatic; this.TwoPhenylethanol.oInnerParent = this.Floral;
+        this.Geraniol.oMiddleParent = this.Aromatic; this.Geraniol.oInnerParent = this.Floral;
+        this.Perfumy.oMiddleParent = this.Aromatic; this.Perfumy.oInnerParent = this.Floral;
+        this.KettleHop.oMiddleParent = this.Aromatic; this.KettleHop.oInnerParent = this.Hoppy;
+        this.DryHop.oMiddleParent = this.Aromatic; this.DryHop.oInnerParent = this.Hoppy;
+        this.HopOil.oMiddleParent = this.Aromatic; this.HopOil.oInnerParent = this.Hoppy;
+        this.Piney.oMiddleParent = this.Vegetal; this.Piney.oInnerParent = this.Resinous;
+        this.Woody.oMiddleParent = this.Vegetal; this.Woody.oInnerParent = this.Resinous;
+        this.Walnut.oMiddleParent = this.Vegetal; this.Walnut.oInnerParent = this.Nutty;
+        this.Coconut.oMiddleParent = this.Vegetal; this.Coconut.oInnerParent = this.Nutty;
+        this.Beany.oMiddleParent = this.Vegetal; this.Beany.oInnerParent = this.Nutty;
+        this.Almond.oMiddleParent = this.Vegetal; this.Almond.oInnerParent = this.Nutty;
+        this.FreshlyCutGrass.oMiddleParent = this.Vegetal; this.FreshlyCutGrass.oInnerParent = this.Grassy;
+        this.StrawLike.oMiddleParent = this.Vegetal; this.StrawLike.oInnerParent = this.Grassy;
+        this.Husky.oMiddleParent = this.Cereal; this.Husky.oInnerParent = this.Grainy;
+        this.CornGrits.oMiddleParent = this.Cereal; this.CornGrits.oInnerParent = this.Grainy;
+        this.Mealy.oMiddleParent = this.Cereal; this.Mealy.oInnerParent = this.Grainy;
+        this.Malty.oMiddleParent = this.Cereal; this.Malty.oInnerParent = this.Blank12;
+        this.Worty.oMiddleParent = this.Cereal; this.Worty.oInnerParent = this.Blank13;
+        this.Molasses.oMiddleParent = this.Maillard; this.Molasses.oInnerParent = this.Caramel;
+        this.Licorice.oMiddleParent = this.Maillard; this.Licorice.oInnerParent = this.Caramel;
+        this.BreadCrust.oMiddleParent = this.Maillard; this.BreadCrust.oInnerParent = this.Burnt;
+        this.RoastBarley.oMiddleParent = this.Maillard; this.RoastBarley.oInnerParent = this.Burnt;
+        this.Smoky.oMiddleParent = this.Maillard; this.Smoky.oInnerParent = this.Burnt;
+        this.Tarry.oMiddleParent = this.Phenolic; this.Tarry.oInnerParent = "";
+        this.Bakelite.oMiddleParent = this.Phenolic; this.Bakelite.oInnerParent = "";
+        this.Carbolic.oMiddleParent = this.Phenolic; this.Carbolic.oInnerParent = "";
+        this.Chlorophenol.oMiddleParent = this.Phenolic; this.Chlorophenol.oInnerParent = "";
+        this.Isodoform.oMiddleParent = this.Phenolic; this.Isodoform.oInnerParent = "";
+    }
+
+    //init flavor wheel
+    var oFW = new FlavorWheelObj(iFWMinR, iFWMiddle1R, iFWMiddle2R, iFWMaxR);
+</script>
+
+
+
+<canvas id="flavorWheel" width="602" height="602" style="float:right"> 
+<script>
+
+    var c = document.getElementById("flavorWheel");
+    var ctx = c.getContext("2d");
+
+    ctx.save();
+    ctx.translate(0.5, 0.5);
+
+    //turn on relevant sections
+    //oFW.oSlices[117].setPctOn(0.045);
+    //oFW.DryHop.setPctOn(0.117);    
+
+    //render sections
+    for (i = oFW.oSlices.length - 1; i >= 0; i--) {
+        oFW.oSlices[i].render(ctx, iFWCenterX, iFWCenterY, true);
+    }
+
+    ctx.restore();
+
+</script>
+</canvas>
+
 @Html.DisplayForModel()
 @Html.ActionLink("Edit", "Update", new { id = Model.BeerId }, null)
