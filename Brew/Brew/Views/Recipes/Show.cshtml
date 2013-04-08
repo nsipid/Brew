@@ -1,4 +1,4 @@
-﻿@model Brew.ViewModels.Recipes.RecipeViewModel
+﻿@model Brew.ViewModels.Recipes.DetailRecipeViewModel
 
 @section sortRecipes {
     <nav>
@@ -1037,7 +1037,14 @@
     var oFW = new FlavorWheelObj(iFWMinR, iFWMiddle1R, iFWMiddle2R, iFWMaxR);
 </script>
 
-
+@foreach(string strName in Model.FlavorCounts.Keys) {
+    <script> 
+        str = "@strName";
+        count = "@Model.FlavorCounts[strName]" / "@Model.CommentsCount";
+        alert(count);//
+        oFW[str].setPctOn(count);
+    </script>
+}
 
 <canvas id="flavorWheel" width="602" height="602" style="float:right"> 
 <script>
