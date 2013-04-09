@@ -16,7 +16,6 @@ namespace Brew.Models
         [Key, Column(Order = 1), ForeignKey("Yeast")]
         public string Yeast_Name { get; set; }
 
-        [Key, Column(Order = 2)]
         public bool AddToSecondary { get; set; } // Flag denoting that this yeast was added for a secondary (or later) fermentation as opposed to the primary fermentation   
 
         public virtual Recipe Recipe { get; set; }

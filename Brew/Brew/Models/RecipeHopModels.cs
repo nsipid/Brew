@@ -16,7 +16,6 @@ namespace Brew.Models
         [Key, Column(Order = 1), ForeignKey("Hop")]
         public string Hop_Name { get; set; }
         
-        [Key, Column(Order = 2), ForeignKey("HopUses")]
         public string HopUses_Name { get; set; }
 
         public HopUse HopUses { get; set; }

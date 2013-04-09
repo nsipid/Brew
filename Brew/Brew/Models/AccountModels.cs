@@ -15,8 +15,12 @@ namespace Brew.Models
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int UserId { get; set; }
         public string UserName { get; set; }
-        public string Email { get; set; }
-        public byte[] Image { get; set; }
+        public virtual ICollection<Recipe> Recipes { get; set; }
+
+        public UserProfile()
+        {
+            Recipes = new HashSet<Recipe>();           
+        }
     }
 
     public class LocalPasswordModel
