@@ -13,7 +13,7 @@ namespace Brew.Models
             : base("DefaultConnection")
         {
         }
-
+        public DbSet<Rating> Ratings { get; set; }
         public DbSet<RecipeHop> RecipeHops { get; set; }
         public DbSet<RecipeYeast> RecipeYeasts { get; set; }
         public DbSet<RecipeFermentable> RecipeFermentables { get; set; }
