@@ -57,7 +57,7 @@ namespace Brew.Models
         public float Age { get; set; } // The time to age the beer in days after bottling.
         [Range(-50, 110)] 
         public float AgeTemp { get; set; } // Temperature for aging the beer after bottling.
-        public string Date { get; set; } // Date brewed 
+        public DateTime Date { get; set; } // Date brewed 
         public float Carbonation { get; set; } // Floating point value corresponding to the target volumes of CO2 used to carbonate this beer.
         public bool ForcedCarbonation { get; set; } // TRUE if the batch was force carbonated using CO2 pressure, FALSE if the batch was carbonated using a priming agent.  
         [StringLength(75)]
@@ -68,7 +68,7 @@ namespace Brew.Models
         public float KegPrimingFactor { get; set; } // Used to factor in the smaller amount of sugar needed for large containers. 
         public float SiteRating { get; set; } // ADDED for website
         public byte[] Image { get; set; }
-
+       
         [ForeignKey("RecipieType")]
         public string RecipieType_Name { get; set; }
 

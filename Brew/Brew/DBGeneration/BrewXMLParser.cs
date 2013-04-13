@@ -582,7 +582,12 @@ namespace Brew.DBGeneration
                                 recipe.AgeTemp = float.Parse(reader.Value);
                                 break;
                             case "DATE":
-                                recipe.Date = reader.Value;
+                                DateTime maxDt = new DateTime(2000,1,1,17,0,0);
+                                TimeSpan timeSpan = DateTime.Today - maxDt;
+                                var randomTest = new Random();
+                                TimeSpan newSpan = new TimeSpan(0, randomTest.Next(0, (int)timeSpan.TotalMinutes), 0);
+                                DateTime newDate = maxDt + newSpan;
+                                recipe.Date = DateTime.Today;
                                 break;
                             case "CARBONATION":
                                 recipe.Carbonation = float.Parse(reader.Value);
