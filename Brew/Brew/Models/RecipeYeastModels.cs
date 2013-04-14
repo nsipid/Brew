@@ -21,6 +21,10 @@ namespace Brew.Models
         public virtual Recipe Recipe { get; set; }
         public virtual Yeast Yeast { get; set; }
 
+        [Required]
+        public float Amount { get; set; } // The amount of yeast, measured in liters.  For a starter this is the size of the starter. If the flag AMOUNT_IS_WEIGHT is set to TRUE then this measurement is in kilograms and not liters.
+        public bool? AmountIsWeight { get; set; } // TRUE if the amount measurement is a weight measurement and FALSE if the amount is a volume measurement. 
+        
         public override bool Equals(object obj)
         {
             return Equals(obj as RecipeYeast);

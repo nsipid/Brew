@@ -16,6 +16,8 @@ namespace Brew.Models
         [Key, Column(Order = 1), ForeignKey("Fermentable")]
         public string Fermentable_Name { get; set; }
 
+        [Required]
+        public float Amount { get; set; } // Weight of the fermentable, extract or sugar in Kilograms.       
         public bool IsMashed { get; set; }
         public bool AddAfterBoil { get; set; } // May be TRUE if this item is normally added after the boil.
 

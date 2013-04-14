@@ -38,11 +38,7 @@ namespace Brew.Models
         [Key, StringLength(75)]        
         public string Name { get; set; }
         [Required, Range(0.0, 100)]
-        public float Alpha { get; set; } // Percent alpha of hops - for example "5.5" represents 5.5% alpha
-        [Required]
-        public float Amount { get; set; } // Weight in Kilograms of the hops used in the recipe.
-        [Required]
-        public float Time { get; set; } // Meaning is dependent on the “USE” 
+        public float Alpha { get; set; } // Percent alpha of hops - for example "5.5" represents 5.5% alpha        
         public HopType HopType { get; set; }
         public HopForm HopForm { get; set; }
         [Range(0.0, 100)]
@@ -51,7 +47,6 @@ namespace Brew.Models
         public float HSI { get; set; } // Hop Stability Index - defined as the percentage of hop alpha lost in 6 months of storage
         [StringLength(75)]
         public string Origin { get; set; } // Place of origin for the hops
-        public string Substitutes { get; set; } // Substitutes that can be used for this hops
         [Range(0.0, 100)]
         public float Humulene { get; set; } // Humulene level in percent
         [Range(0.0, 100)]
@@ -69,9 +64,12 @@ namespace Brew.Models
 
         public virtual ICollection<RecipeHop> RecipeHops { get; set; }
 
+        public virtual ICollection<HopSubstitute> Substitutes { get; set; }
+
         public Hop()
         {
-            RecipeHops = new HashSet<RecipeHop>();           
+            RecipeHops = new HashSet<RecipeHop>();
+            Substitutes = new HashSet<HopSubstitute>();      
         }
 
         public override bool Equals(object obj)

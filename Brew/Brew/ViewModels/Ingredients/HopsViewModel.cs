@@ -20,7 +20,7 @@ namespace Brew.ViewModels.Ingredients
                     allHops.Add(new HopViewModel
                     {
                         Type = hop.HopType.ToString(),
-                        Amount = hop.Amount,
+                        //Amount = hop.Amount, // TODO get from join table
                         Alpha = hop.Alpha,
                         Beta = (double)hop.Beta,
                         PercentHumulene = (double)hop.Humulene,
@@ -28,7 +28,7 @@ namespace Brew.ViewModels.Ingredients
                         PercentCohumulone = (double)hop.Cohumulone,
                         PercentMyrcene = (double)hop.Myrcene,
                         UsedDuring = -1,
-                        UsageTime = TimeSpan.FromMilliseconds(hop.Time),
+                        // UsageTime = TimeSpan.FromMilliseconds(hop.Time), TODO get from join table
                         Form = hop.HopForm.ToString(),
                         Stability = (double)hop.HSI
                                              

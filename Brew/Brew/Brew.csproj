@@ -175,6 +175,7 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\CommentsModels.cs" />
+    <Compile Include="Models\HopSubstituteModel.cs" />
     <Compile Include="Models\RatingsModels.cs" />
     <Compile Include="Models\FermentableModels.cs" />
     <Compile Include="Models\HopModels.cs" />

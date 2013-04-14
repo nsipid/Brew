@@ -19,7 +19,7 @@ namespace Brew.ViewModels.Ingredients
                 {
                     allFermentables.Add(new FermentableViewModel
                     {
-                        Amount = fermentable.Amount.ToString(),
+                        //Amount = fermentable.Amount.ToString(), // TODO get from join table
                         Color = fermentable.Color.ToString(),
                         //AddedAfterBoiling = fermentable.AddAfterBoil.ToString(),
                         Yield = fermentable.Yield,

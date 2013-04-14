@@ -16,7 +16,7 @@ namespace Brew.DBGeneration
         //
         // GET: /DB/
 
-        public Models.Yeast ParseYeasts(XmlTextReader reader, ref bool AddToSecondary)
+        public Models.Yeast ParseYeasts(XmlTextReader reader, ref bool AddToSecondary, ref float Amount, ref bool AmoutIsWeight)
         {
             Models.Yeast yeast = new Models.Yeast();
             var currentNodeName = "";
@@ -58,10 +58,10 @@ namespace Brew.DBGeneration
                                 yeast.YeastForm_Name = reader.Value;
                                 break;
                             case "AMOUNT":
-                                yeast.Amount = float.Parse(reader.Value);
+                                Amount = float.Parse(reader.Value);
                                 break;
                             case "AMOUNT_IS_WEIGHT":
-                                yeast.AmoutIsWeight = bool.Parse(reader.Value);
+                                AmoutIsWeight = bool.Parse(reader.Value);
                                 break;
                             case "LABORATORY":
                                 yeast.Laboratory = reader.Value;
@@ -109,7 +109,7 @@ namespace Brew.DBGeneration
             return yeast;
         }
 
-        public Models.Fermentable ParseFermentable(XmlTextReader reader, ref bool AddAfterBoil, ref bool IsMashed)
+        public Models.Fermentable ParseFermentable(XmlTextReader reader, ref bool AddAfterBoil, ref bool IsMashed, ref float Amount)
         {
             Models.Fermentable fermentable = new Models.Fermentable();
             var currentNodeName = "";
@@ -140,7 +140,7 @@ namespace Brew.DBGeneration
                                 fermentable.FermentableType_Name = reader.Value;
                                 break;
                             case "AMOUNT":
-                                fermentable.Amount = float.Parse(reader.Value);
+                                Amount = float.Parse(reader.Value);
                                 break;
                             case "YIELD":
                                 fermentable.Yield = float.Parse(reader.Value);
@@ -182,7 +182,7 @@ namespace Brew.DBGeneration
             return fermentable;
         }
 
-        public Models.Hop ParseHop(XmlTextReader reader, ref string HopUses_Name)
+        public Models.Hop ParseHop(XmlTextReader reader, ref string HopUses_Name, ref float Amount, ref float Time)
         {
             Models.Hop hop = new Models.Hop();
             var currentNodeName = "";
@@ -203,7 +203,7 @@ namespace Brew.DBGeneration
                                 hop.Alpha = float.Parse(reader.Value);
                                 break;
                             case "AMOUNT":
-                                hop.Amount = float.Parse(reader.Value);
+                                Amount = float.Parse(reader.Value);
                                 break;
                             case "USE":
                                 Models.HopUse hopUse = new Models.HopUse() { Name = reader.Value };
@@ -218,7 +218,7 @@ namespace Brew.DBGeneration
                                 HopUses_Name = reader.Value;
                                 break;
                             case "TIME":
-                                hop.Time = float.Parse(reader.Value);
+                                Time = float.Parse(reader.Value);
                                 break;
                            case "TYPE":
                                 Models.HopType hopType = new Models.HopType() { Name = reader.Value };
@@ -254,7 +254,7 @@ namespace Brew.DBGeneration
                                 hop.Origin = reader.Value;
                                 break;
                             case "SUBSTITUTES":
-                                hop.Substitutes = reader.Value;
+                                //hop.Substitutes = reader.Value;
                                 break;
                             case "HUMULENE":
                                 hop.Humulene = float.Parse(reader.Value);
@@ -429,11 +429,15 @@ namespace Brew.DBGeneration
                                 break;
                              case "HOP":
                                 string HopUses_Name = "";
-                                Models.Hop hop = ParseHop(reader, ref HopUses_Name);
+                                float Amount = 0;
+                                float Time = 0;
+                                Models.Hop hop = ParseHop(reader, ref HopUses_Name, ref Amount, ref Time);
                                 Models.RecipeHop recipeHop = new Models.RecipeHop();
                                 recipeHop.Recipe_Name = recipe.Name;
                                 recipeHop.Hop_Name = hop.Name;
                                 recipeHop.HopUses_Name = HopUses_Name;
+                                recipeHop.Amount = Amount;
+                                recipeHop.Time = Time;
 
                                 using (var context = new Models.ModelsContext())
                                 {
@@ -451,14 +455,15 @@ namespace Brew.DBGeneration
                              case "FERMENTABLE":
                                 bool AddAfterBoil = false;
                                 bool IsMashed = false;
-
-                                Models.Fermentable fermentable = ParseFermentable(reader, ref AddAfterBoil, ref IsMashed);
+                                Amount = 0;
+                                Models.Fermentable fermentable = ParseFermentable(reader, ref AddAfterBoil, ref IsMashed, ref Amount);
                                 
                                 Models.RecipeFermentable recipeFermentable = new Models.RecipeFermentable();
                                 recipeFermentable.AddAfterBoil = AddAfterBoil;
                                 recipeFermentable.IsMashed = IsMashed;
                                 recipeFermentable.Fermentable_Name = fermentable.Name;
                                 recipeFermentable.Recipe_Name = recipe.Name;
+                                recipeFermentable.Amount = Amount;
                                 
                                 using (var context = new Models.ModelsContext())
                                 {
@@ -476,12 +481,16 @@ namespace Brew.DBGeneration
                                 break;
                              case "YEAST":
                                 bool AddToSecondary = false;
-                                Models.Yeast yeast = ParseYeasts(reader, ref AddToSecondary);
+                                bool AmountIsWeight = false;
+                                Amount = 0;
+                                Models.Yeast yeast = ParseYeasts(reader, ref AddToSecondary, ref Amount, ref AmountIsWeight);
 
                                 Models.RecipeYeast recipeYeast = new Models.RecipeYeast();
                                 recipeYeast.AddToSecondary = AddToSecondary;
                                 recipeYeast.Recipe_Name = recipe.Name;
                                 recipeYeast.Yeast_Name = yeast.Name;
+                                recipeYeast.AmountIsWeight = AmountIsWeight;
+                                recipeYeast.Amount = Amount;
 
                                 using (var context = new Models.ModelsContext())
                                 {

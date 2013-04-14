@@ -22,8 +22,6 @@ namespace Brew.Models
         public string Name { get; set; }
         //[Required]
         public FermentableType FermentableType { get; set; }
-        [Required]
-        public float Amount { get; set; } // Weight of the fermentable, extract or sugar in Kilograms.
         [Required, Range(0.0, 100)]
         public float Yield { get; set; } // Percent dry yield (fine grain) for the grain, or the raw yield by weight if this is an extract adjunct or sugar.
         [Required]

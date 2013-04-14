@@ -22,6 +22,11 @@ namespace Brew.Models
         public virtual Hop Hop { get; set; }
         public virtual Recipe Recipe { get; set; }
 
+        [Required]
+        public float Amount { get; set; } // Weight in Kilograms of the hops used in the recipe.
+        [Required]
+        public float Time { get; set; } // Meaning is dependent on the “USE” 
+
         public override bool Equals(object obj)
         {
             return Equals(obj as RecipeHop);

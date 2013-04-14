@@ -38,9 +38,6 @@ namespace Brew.Models
         public YeastType YeastType { get; set; }
         //[Required]
         public YeastForm YeastForm { get; set; }
-        [Required]
-        public float Amount { get; set; } // The amount of yeast, measured in liters.  For a starter this is the size of the starter. If the flag AMOUNT_IS_WEIGHT is set to TRUE then this measurement is in kilograms and not liters.
-        public bool? AmoutIsWeight { get; set; } // TRUE if the amount measurement is a weight measurement and FALSE if the amount is a volume measurement. 
         [StringLength(75)]
         public string Laboratory { get; set; } // The name of the laboratory that produced the yeast.
         public int? ProductID { get; set; } // The manufacturer’s product ID label or number that identifies this particular strain of yeast. 
