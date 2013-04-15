@@ -11,9 +11,9 @@ namespace Brew.ViewModels
 
         public readonly int PageSize;
 
-        public readonly uint LastPage;
+        public readonly int LastPage;
 
-        public readonly uint CurrentPageNumber;
+        public readonly int CurrentPageNumber;
 
         public bool HasNextPage
         {
@@ -30,18 +30,14 @@ namespace Brew.ViewModels
             get { return singlePage; }
         }
 
-        public PagedList(List<T> singlePage, uint lastPage, uint pageNumber = 0, int pageSize = 30)
+        public PagedList(IOrderedQueryable<T> queryable, int pageNumber = 0, int pageSize = 30)
         {
-            this.singlePage = singlePage;
-            LastPage = lastPage;
+            var queryablePage = queryable.Skip(pageSize * pageNumber).Take(pageSize);
+
+            this.singlePage = queryablePage.ToList();
             CurrentPageNumber = pageNumber;
             PageSize = pageSize;
-
-            if (pageNumber > lastPage)
-                throw new ArgumentException("Page number cannot be greater than last page.");
-
-            if (singlePage.Count < pageSize && pageNumber != lastPage)
-                throw new ArgumentException("Only the last page can contain a page smaller than pageSize.");
+            LastPage = queryable.Count() / pageSize;
         }
     }
 }

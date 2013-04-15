@@ -16,9 +16,10 @@ namespace Brew.Models
         [Key, Column(Order = 1), ForeignKey("Hop")]
         public string Hop_Name { get; set; }
         
+        [ForeignKey("HopUse")]
         public string HopUses_Name { get; set; }
 
-        public HopUse HopUses { get; set; }
+        public HopUse HopUse { get; set; }
         public virtual Hop Hop { get; set; }
         public virtual Recipe Recipe { get; set; }
 

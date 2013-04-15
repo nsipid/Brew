@@ -1,4 +1,4 @@
-﻿@model Brew.ViewModels.Recipes.RecipesViewModel
+﻿@model Brew.ViewModels.Recipes.RecipeListViewModel
 
 @helper BuildTab(string tabName, string sortby)
 {
@@ -17,8 +17,7 @@
         <ul class="sortRecipes">
             <li>Recipes</li>
             <li>@BuildTab("Hoppin'", "hoppin")</li>
-            <li>@BuildTab("Top", "top")</li>
-            <li>@BuildTab("Fresh", "newest")</li>
+            <li>@BuildTab("Fresh", "fresh")</li>
         </ul>
     </nav>
 }
@@ -51,8 +50,8 @@
                         <div>avg</div>
                     </div>
                 </td>
-                <td><img src="@Url.Action("Index", "BeerImage", new { id = beer.Id })"/></td>
-                <td>@Html.ActionLink(beer.Name, "Show", "Recipes", new {strBeerName = beer.Name}, null)</td> <!-- {id = beer.Id} -->
+                <td><img src="@Url.Action("Index", "BeerImage", new { name = beer.Name })"/></td>
+                <td>@Html.ActionLink(beer.Name, "Show", "Recipes", new {name = beer.Name}, null)</td> 
                 <td>@beer.Style</td>
                 <td>@beer.Abv%</td>
                 <td>@{@beer.Color}L</td>

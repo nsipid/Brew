@@ -1,5 +1,32 @@
-﻿@{
-    ViewBag.Title = "List";
+﻿@model Brew.ViewModels.Ingredients.IngredientListViewModel
+
+@helper BuildTab(string type, string displayName)
+{
+    if (String.Compare(type, Model.Type, true) == 0)
+    {
+        @Html.ActionLink(displayName, "List", new { type = type }, new { Id = "current" });
+    }
+    else
+    {
+        @Html.ActionLink(displayName, "List", new { type = type });
+    }
 }
 
-<h2>List</h2>
+@section sortRecipes {
+    <nav>
+        <ul class="sortRecipes">
+            <li>Recipes</li>
+            <li>@BuildTab("hop", "Hops")</li>
+            <li>@BuildTab("fermentable", "Fermentables")</li>
+        </ul>
+    </nav>
+}
+
+@if(Model.Type == "hop")
+{
+    @Html.Partial("_HopTable")
+}
+else if (Model.Type == "fermentable")
+{ 
+    @Html.Partial("_FermentableTable")
+}

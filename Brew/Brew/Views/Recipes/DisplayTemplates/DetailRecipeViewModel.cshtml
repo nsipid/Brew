@@ -1,7 +1,7 @@
 ﻿@model Brew.ViewModels.Recipes.DetailRecipeViewModel
 
 <div>
-    <img src="@Url.Action("Index", "BeerImage", new { id = Model.BeerId })"/>
+    <img src="@Url.Action("Index", "BeerImage", new { name = Model.BeerName })"/>
 </div>
 
 <section>
@@ -35,10 +35,22 @@
 <section>
     <h1>Ingredients</h1>
     <section>
-        <h1>Hops</h1>
+        <h2>Hops</h2>
+        <ul>
+        @foreach (var hop in Model.HopsUsed)
+        { 
+            <li>@hop.Name</li>
+        }
+        </ul>
     </section>
     <section>
-        <h1>Fermentables</h1>
+        <h2>Fermentables</h2>
+        <ul>
+        @foreach (var f in Model.FermentablesUsed)
+        { 
+            <li>@f.Name</li>
+        }
+        </ul>
     </section>
 </section>
 
@@ -51,11 +63,7 @@
         <dd>@Html.DisplayTextFor(m => m.SiteRating)</dd>
         <dt>@Html.DisplayNameFor(m => m.AvgRating)</dt>
         <dd>@Html.DisplayTextFor(m => m.AvgRating)</dd>
-        <dt>@Html.DisplayNameFor(m => m.NumFavorites)</dt>
-        <dd>@Html.DisplayTextFor(m => m.NumFavorites)</dd>
         <dt>@Html.DisplayNameFor(m => m.PostedDate)</dt>
         <dd>@Html.DisplayTextFor(m => m.PostedDate)</dd>
-        <dt>@Html.DisplayNameFor(m => m.VisitedCount)</dt>
-        <dd>@Html.DisplayTextFor(m => m.VisitedCount)</dd>
     </dl>
 </section>

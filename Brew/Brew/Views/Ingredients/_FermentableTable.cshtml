@@ -1,0 +1,30 @@
+﻿@model Brew.ViewModels.Ingredients.IngredientListViewModel
+
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Color</th>
+            <th scope="col">IBUs</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var fermentable in Model.Fermentables.CurrentPage)
+        {
+            <tr>
+                <td>@Html.ActionLink(fermentable.Name, "Show", "Ingredients", new { name = fermentable.Name, type = "fermentable" }, null)</td>
+                <td>@fermentable.Color</td>
+                <td>@fermentable.IBUs</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (Model.Fermentables.HasPreviousPage)
+{
+    @Html.ActionLink("<<", "List", "Ingredients", new { pageno = Model.Fermentables.CurrentPageNumber - 1, type = Model.Type }, null);
+}
+@if (Model.Fermentables.HasNextPage)
+{
+    @Html.ActionLink(">>", "List", "Ingredients", new { pageno = Model.Fermentables.CurrentPageNumber + 1, type = Model.Type }, null);
+}

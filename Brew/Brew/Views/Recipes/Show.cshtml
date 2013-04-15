@@ -6,13 +6,13 @@
     <nav>
         <ul class="sortRecipes">
             <li>@Model.BeerName</li>
-            <li id="current">@Html.ActionLink("Details", "Show", new {Id = Model.BeerId}, null)</li>
-            <li>@Html.ActionLink("Comments", "Show", new {Id = Model.BeerId}, null)</li>
+            <li id="current">@Html.ActionLink("Details", "Show", new {name = Model.BeerName}, null)</li>
+            <li>@Html.ActionLink("Comments", "Show", new {name = Model.BeerName}, null)</li>
          </ul>
     </nav>
 }
 
-<script>
+@*<script>
 
     var iFWCenterX = 300;
     var iFWCenterY = 300;
@@ -1037,16 +1037,16 @@
 
     //init flavor wheel
     var oFW = new FlavorWheelObj(iFWMinR, iFWMiddle1R, iFWMiddle2R, iFWMaxR);
-</script>
+</script>*@
 
 <!--turn on relevant sections of the flavor wheel-->
-@foreach(string strName in Model.FlavorCounts.Keys) {
+@*@foreach(string strName in Model.FlavorCounts.Keys) {
     <script> 
         str = "@strName";
         count = "@Model.FlavorCounts[strName]" / "@Model.CommentsCount";
         oFW[str].setPctOn(count);
     </script>
-}
+}*@
 
 @{
     //List<double> oDataItems = new List<double>();
@@ -1061,15 +1061,15 @@
     //double dBayesianAvg3 = StatisticsUtils.GetBayesianAvg(176, 201, 10, 1);
     //<script>alert(@dBayesianAvg1); alert(@dBayesianAvg2); alert(@dBayesianAvg3);</script>
     
-    long lCount; double dSum; double dAvg;
-    StatisticsUtils.GetRecipeRatingsSimpleStats("Bt: Saison", out lCount, out dSum, out dAvg);
-    <script>alert(@lCount); alert(@dSum); alert(@dAvg);</script>
+    //long lCount; double dSum; double dAvg;
+    //StatisticsUtils.GetRecipeRatingsSimpleStats("Bt: Saison", out lCount, out dSum, out dAvg);
+    //<script>alert(@lCount); alert(@dSum); alert(@dAvg);</script>
 
-    double dSiteAvg = StatisticsUtils.GetSiteAvg("Bt: Saison");
-    <script>alert(@dSiteAvg);</script>
+    //double dSiteAvg = StatisticsUtils.GetSiteAvg("Bt: Saison");
+    //<script>alert(@dSiteAvg);</script>
 }
 
-<canvas id="flavorWheel" width="602" height="602" style="float:right"> 
+@*<canvas id="flavorWheel" width="602" height="602" style="float:right"> 
 <script>
 
     var c = document.getElementById("flavorWheel");
@@ -1086,7 +1086,7 @@
     ctx.restore();
 
 </script>
-</canvas>
+</canvas>*@
 
 @Html.DisplayForModel()
-@Html.ActionLink("Edit", "Update", new { id = Model.BeerId }, null)
+@Html.ActionLink("Edit", "Update", new { name = Model.BeerName }, null)

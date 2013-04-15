@@ -172,6 +172,10 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201304150132096_migration1.cs" />
+    <Compile Include="Migrations\201304150132096_migration1.Designer.cs">
+      <DependentUpon>201304150132096_migration1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\CommentsModels.cs" />
@@ -192,16 +196,17 @@
     <Compile Include="Utilities\BrewCharacteristicAlgs.cs" />
     <Compile Include="Utilities\StatisticsUtils.cs" />
     <Compile Include="ViewModels\BaseLayoutViewModel.cs" />
-    <Compile Include="ViewModels\Ingredients\HopsViewModel.cs" />
-    <Compile Include="ViewModels\Ingredients\FermentablesViewModel.cs" />
+    <Compile Include="ViewModels\Ingredients\FermentableListItemViewModel.cs" />
+    <Compile Include="ViewModels\Ingredients\HopListItemViewModel.cs" />
     <Compile Include="ViewModels\Ingredients\FermentableViewModel.cs" />
     <Compile Include="ViewModels\Ingredients\HopViewModel.cs" />
+    <Compile Include="ViewModels\Ingredients\IngredientListViewModel.cs" />
     <Compile Include="ViewModels\Ingredients\IngredientViewModel.cs" />
     <Compile Include="ViewModels\PagedList.cs" />
-    <Compile Include="ViewModels\Recipes\BeerSummaryViewModel.cs" />
+    <Compile Include="ViewModels\Recipes\RecipeListItemViewModel.cs" />
     <Compile Include="ViewModels\Recipes\CommentsRecipeViewModel.cs" />
     <Compile Include="ViewModels\Recipes\DetailRecipeViewModel.cs" />
-    <Compile Include="ViewModels\Recipes\RecipesViewModel.cs" />
+    <Compile Include="ViewModels\Recipes\RecipeListViewModel.cs" />
     <Compile Include="ViewModels\Recipes\RecipeViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -313,6 +318,9 @@
     <Content Include="Views\Recipes\List.cshtml" />
     <Content Include="Views\Recipes\Show.cshtml" />
     <Content Include="Views\Recipes\Update.cshtml" />
+    <Content Include="Views\Ingredients\_HopTable.cshtml" />
+    <Content Include="Views\Ingredients\_FermentableTable.cshtml" />
+    <Content Include="Views\Ingredients\DisplayTemplates\FermentableViewModel.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -322,6 +330,12 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201304150132096_migration1.resx">
+      <DependentUpon>201304150132096_migration1.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

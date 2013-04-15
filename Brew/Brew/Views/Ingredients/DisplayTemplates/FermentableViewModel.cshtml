@@ -1,0 +1,15 @@
+﻿@model Brew.ViewModels.Ingredients.FermentableViewModel
+
+<section>
+    <h1>@Html.DisplayTextFor(m => m.Name)</h1>
+    <dl>
+        <dt>@Html.DisplayNameFor(m => m.Color)</dt>
+        <dd>@Html.DisplayTextFor(m => m.Color)</dd>
+        <dt>@Html.DisplayNameFor(m => m.Yield)</dt>
+        <dd>@Html.DisplayTextFor(m => m.Yield)</dd>
+        <dt>@Html.DisplayNameFor(m => m.CourseGrainYield)</dt>
+        <dd>@Html.DisplayTextFor(m => m.CourseGrainYield)</dd>
+        <dt>@Html.DisplayNameFor(m => m.DiastaticPower)</dt>
+        <dd>@Html.DisplayTextFor(m => m.DiastaticPower)</dd>
+    </dl>
+</section>

@@ -9,7 +9,7 @@ namespace Brew.ViewModels.Recipes
 
         public string RecipeType { get; set; }
 
-        public double Abv { get; set; }
+        public double Abv { get { return Utilities.BrewCharacteristicAlgs.CalculateABV(OriginalGravity, FinalGravity); } }
 
         public double OriginalGravity { get; set; }
 
@@ -31,36 +31,6 @@ namespace Brew.ViewModels.Recipes
         public List<FermentableViewModel> FermentablesUsed { get; set; }
 
         public Dictionary<string, long> FlavorCounts { get; set; }
-        public long CommentsCount { get; set; }
-
-        public DetailRecipeViewModel()
-        {
-            HopsUsed = new List<HopViewModel>()
-                {
-                    new HopViewModel()
-                        {
-                            Name = "Hop1",
-                            Alpha = 0.23,
-                            Beta = 0.33,
-                            PercentCaryophyllene = 20,
-                            PercentCohumulone = 10,
-                            PercentHumulene = 50,
-                            PercentMyrcene = 20,
-                            Amount = 123
-                        },
-                     new HopViewModel()
-                        {
-                            Name = "Hop2",
-                            Alpha = 0.23,
-                            Beta = 0.33,
-                            PercentCaryophyllene = 20,
-                            PercentCohumulone = 10,
-                            PercentHumulene = 50,
-                            PercentMyrcene = 20,
-                            Amount = 123
-                        },
-                };
-            FermentablesUsed = new List<FermentableViewModel>();
-        }
+        public long CommentsCount { get; set; }   
     }
 }

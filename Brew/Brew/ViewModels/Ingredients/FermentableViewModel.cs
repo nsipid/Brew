@@ -7,9 +7,9 @@ namespace Brew.ViewModels.Ingredients
 {
     public class FermentableViewModel : IngredientViewModel
     {      
-        public string Amount { get; set; }
-        public string Color { get; set; }
-        public string AddedAfterBoiling { get; set; }
+        public float Amount { get; set; }
+        public float Color { get; set; }
+        public bool IsAddedAfterBoiling { get; set; }
 
         /// <summary>
         /// Fine grain/Extract Yield
