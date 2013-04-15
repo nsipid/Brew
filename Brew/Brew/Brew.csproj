@@ -199,6 +199,9 @@
     <Compile Include="ViewModels\Ingredients\IngredientListViewModel.cs" />
     <Compile Include="ViewModels\Ingredients\IngredientViewModel.cs" />
     <Compile Include="ViewModels\PagedList.cs" />
+    <Compile Include="ViewModels\Recipes\CommentViewModel.cs" />
+    <Compile Include="ViewModels\Recipes\MashProfileViewModel.cs" />
+    <Compile Include="ViewModels\Recipes\MashStepViewModel.cs" />
     <Compile Include="ViewModels\Recipes\RecipeListItemViewModel.cs" />
     <Compile Include="ViewModels\Recipes\CommentsRecipeViewModel.cs" />
     <Compile Include="ViewModels\Recipes\DetailRecipeViewModel.cs" />
@@ -317,6 +320,7 @@
     <Content Include="Views\Ingredients\_HopTable.cshtml" />
     <Content Include="Views\Ingredients\_FermentableTable.cshtml" />
     <Content Include="Views\Ingredients\DisplayTemplates\FermentableViewModel.cshtml" />
+    <Content Include="Views\Ingredients\EditorTemplates\FermentableViewModel.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

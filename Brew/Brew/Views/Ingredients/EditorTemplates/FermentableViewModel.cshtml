@@ -1,0 +1,35 @@
+﻿@model Brew.ViewModels.Ingredients.FermentableViewModel
+
+@using (Ajax.BeginForm("CreateFermentable", "Ingredients", new AjaxOptions { InsertionMode = InsertionMode.Replace, UpdateTargetId = "newFermentableDialog", HttpMethod = "POST"}))
+{
+        <fieldset>
+            <legend>@Model.Name</legend>
+        <p>
+            @Html.LabelFor(m => m.Name)
+            @Html.TextBoxFor(m => m.Name)
+            @Html.ValidationMessageFor(m => m.Name)
+        </p>
+        <p>
+            @Html.LabelFor(m => m.Color)
+            @Html.TextBoxFor(m => m.Color)
+            @Html.ValidationMessageFor(m => m.Color)
+        </p>
+        <p>
+            @Html.LabelFor(m => m.DiastaticPower)
+            @Html.TextBoxFor(m => m.DiastaticPower)
+            @Html.ValidationMessageFor(m => m.DiastaticPower)
+        </p>
+        <p>
+            @Html.LabelFor(m => m.CourseGrainYield)
+            @Html.TextBoxFor(m => m.CourseGrainYield)
+            @Html.ValidationMessageFor(m => m.CourseGrainYield)
+        </p>
+        <p>
+            @Html.LabelFor(m => m.Yield)
+            @Html.TextBoxFor(m => m.Yield)
+            @Html.ValidationMessageFor(m => m.Yield)
+        </p>
+    </fieldset>
+    
+    <input type="submit" value="Apply" />
+}

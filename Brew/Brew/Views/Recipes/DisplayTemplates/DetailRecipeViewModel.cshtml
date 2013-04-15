@@ -54,6 +54,63 @@
     </section>
 </section>
 
+@if(Model.Mash != null)
+{
+    <section>
+        <h1>Mash</h1>
+        <dl>
+            <dt>@Html.DisplayNameFor(m => m.Mash.Name)</dt>
+            <dd>@Html.DisplayTextFor(m => m.Mash.Name)</dd>
+            <dt>@Html.DisplayNameFor(m => m.Mash.GrainTemp)</dt>
+            <dd>@Html.DisplayTextFor(m => m.Mash.GrainTemp)</dd>
+            <dt>@Html.DisplayNameFor(m => m.Mash.TunTemp)</dt>
+            <dd>@Html.DisplayTextFor(m => m.Mash.TunTemp)</dd>
+            <dt>@Html.DisplayNameFor(m => m.Mash.SpargeTemp)</dt>
+            <dd>@Html.DisplayTextFor(m => m.Mash.SpargeTemp)</dd>
+            <dt>@Html.DisplayNameFor(m => m.Mash.PH)</dt>
+            <dd>@Html.DisplayTextFor(m => m.Mash.PH)</dd>
+            <dt>@Html.DisplayNameFor(m => m.Mash.TunWeight)</dt>
+            <dd>@Html.DisplayTextFor(m => m.Mash.TunWeight)</dd>
+            <dt>@Html.DisplayNameFor(m => m.Mash.TunSpecificHeat)</dt>
+            <dd>@Html.DisplayTextFor(m => m.Mash.TunSpecificHeat)</dd>
+            <dt>@Html.DisplayNameFor(m => m.Mash.EquipAdjust)</dt>
+            <dd>@Html.DisplayTextFor(m => m.Mash.EquipAdjust)</dd>
+            <dt>@Html.DisplayNameFor(m => m.Mash.Notes)</dt>
+            <dd>@Html.DisplayTextFor(m => m.Mash.Notes)</dd>
+        </dl>
+        <h2>Mash Steps</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Infuse Amount (L)</th>
+                    <th scope="col">Step Temp (C)</th>
+                    <th scope="col">Step Time</th>
+                    <th scope="col">End Temp (C)</th>
+                    <th scope="col">Infuse Temp (C)</th>
+                   <th scope="col">Decoction Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var mashStep in Model.Mash.Steps)
+                {
+                    <tr>
+                        <td>@mashStep.Name</td>
+                        <td>@mashStep.Type</td>
+                        <td>@mashStep.InfuseAmountLiters</td>
+                        <td>@mashStep.StepTempCel</td>
+                        <td>@mashStep.StepTimeMin</td>
+                        <td>@mashStep.EndTempCel</td>
+                        <td>@mashStep.InfuseTempCel</td>
+                        <td>@mashStep.DecoctionAmount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+}
+
 <section>
     <h1>Community</h1>
     <dl>

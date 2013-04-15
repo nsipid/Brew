@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Web;
 
 namespace Brew.ViewModels.Recipes
 {
@@ -10,11 +8,17 @@ namespace Brew.ViewModels.Recipes
     {
         [DisplayName("Name")]
         public string BeerName { get; set; }
+
         public List<string> Creators { get; set; }
+
         public double YourRating { get; set; }
+
         public double SiteRating { get; set; }
+
         public double AvgRating { get; set; }
+
         public ulong NumRatings { get; set; }
+
         public DateTime PostedDate { get; set; }
     }
 }

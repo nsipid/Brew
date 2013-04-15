@@ -26,5 +26,7 @@ namespace Brew.ViewModels.Ingredients
         public double? CourseGrainYield { get; set; }
 
         public double DiastaticPower { get; set; }
+
+        public bool IsMashed { get; set; }
     }
 }

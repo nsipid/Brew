@@ -10,7 +10,7 @@ namespace Brew.Controllers
     public class BeerImageController : Controller
     {
         // GET: /BeerImage/
-        public FileResult Index(int id)
+        public FileResult Index(string name)
         {
             //TODO: read image from db by beer id
 

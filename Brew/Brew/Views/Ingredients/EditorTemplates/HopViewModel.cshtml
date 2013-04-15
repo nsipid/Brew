@@ -1,9 +1,14 @@
 ﻿@model Brew.ViewModels.Ingredients.HopViewModel
 
-@using (Ajax.BeginForm(new AjaxOptions { UpdateTargetId = "newHopDialog", HttpMethod = "POST" }))
+@using (Ajax.BeginForm("CreateHop", "Ingredients", new AjaxOptions { InsertionMode = InsertionMode.Replace, UpdateTargetId = "newHopDialog", HttpMethod = "POST" }))
 {
         <fieldset>
-        <legend>@Model.Name</legend>
+            <legend>@Model.Name</legend>
+        <p>
+            @Html.LabelFor(m => m.Name)
+            @Html.TextBoxFor(m => m.Name)
+            @Html.ValidationMessageFor(m => m.Name)
+        </p>
         <p>
             @Html.LabelFor(m => m.Alpha)
             @Html.TextBoxFor(m => m.Alpha)
@@ -20,9 +25,29 @@
             @Html.ValidationMessageFor(m => m.Type)
         </p>
         <p>
+            @Html.LabelFor(m => m.Stability)
+            @Html.TextBoxFor(m => m.Stability)
+            @Html.ValidationMessageFor(m => m.Stability)
+        </p>
+        <p>
             @Html.LabelFor(m => m.PercentCaryophyllene)
             @Html.TextBoxFor(m => m.PercentCaryophyllene)
             @Html.ValidationMessageFor(m => m.PercentCaryophyllene)
+        </p>
+        <p>
+            @Html.LabelFor(m => m.PercentCohumulone)
+            @Html.TextBoxFor(m => m.PercentCohumulone)
+            @Html.ValidationMessageFor(m => m.PercentCohumulone)
+        </p>
+        <p>
+            @Html.LabelFor(m => m.PercentHumulene)
+            @Html.TextBoxFor(m => m.PercentHumulene)
+            @Html.ValidationMessageFor(m => m.PercentHumulene)
+        </p>
+        <p>
+            @Html.LabelFor(m => m.PercentMyrcene)
+            @Html.TextBoxFor(m => m.PercentMyrcene)
+            @Html.ValidationMessageFor(m => m.PercentMyrcene)
         </p>
     </fieldset>
     

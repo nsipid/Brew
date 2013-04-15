@@ -36,15 +36,15 @@ namespace Brew.Models
         public bool Equals(RecipeHop other)
         {
             return (other.Recipe_Name == this.Recipe_Name) &&
-                (other.Hop_Name == this.Hop_Name) &&
-                (other.HopUses_Name == this.HopUses_Name);
+                (other.Hop_Name == this.Hop_Name) /*&&
+                (other.HopUses_Name == this.HopUses_Name)*/;
         }
 
         public override int GetHashCode()
         {
             return this.Recipe_Name.GetHashCode() +
-                this.Hop_Name.GetHashCode() +
-               HopUses_Name.GetHashCode();
+                this.Hop_Name.GetHashCode()
+               /*+ HopUses_Name.GetHashCode()*/;
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Web;
 namespace Brew.ViewModels.Recipes
 {
     public class CommentsRecipeViewModel : RecipeViewModel
-    {
+    { 
+        public List<CommentViewModel> Comments { get; set; }
     }
 }

@@ -55,26 +55,58 @@
         <section>
             <h2>Hops</h2>
             <div id ="hopList">
-            @foreach (var hop in Model.HopsUsed)
-            {
-                @Html.DisplayFor(m => hop);
-            }
+                <ul>                  
+                    @for (int i = 0; i < Model.HopsUsed.Count; i++)
+                    {
+                        <li>
+                            <span>
+                                @Model.HopsUsed[i].Name <input type ="submit" name="submission" value="Delete Hop @Model.HopsUsed[i].Name" />
+                                @Html.HiddenFor(m => Model.HopsUsed[i].Name)
+                                @Html.HiddenFor(m => Model.HopsUsed[i].Beta)  
+                                @Html.HiddenFor(m => Model.HopsUsed[i].Alpha)  
+                                @Html.HiddenFor(m => Model.HopsUsed[i].PercentCohumulone)  
+                                @Html.HiddenFor(m => Model.HopsUsed[i].PercentCaryophyllene)
+                                @Html.HiddenFor(m => Model.HopsUsed[i].PercentHumulene)    
+                                @Html.HiddenFor(m => Model.HopsUsed[i].PercentMyrcene)                              
+                            </span>
+                        </li>
+                    }
+                </ul>
+                @for (int i = 0; i < Model.RemovedHops.Count; i++)
+                {
+                    @Html.HiddenFor(m => Model.RemovedHops[i])
+                }
             </div>
-            @Html.TextBoxFor(m=>m.HopToAdd, "Add Hop", new {@id = "addHopSearch"})
-            <a href="#" class="addItem" />
+            @Html.TextBoxFor(m=>m.HopToAdd.Name, "Add Hop", new {@id = "addHopSearch"})
+            <input type ="submit" name="submission" value="Add Hop" class="addItem" />
             @Html.ActionLink("Create New Hop", "Create", "Ingredients", new {type = "hop"}, new {@class = "openNewHop", data_newHop_id = "newHopDialog", data_newHop_title = "New Hop"})
         </section>
         <section>
         <h2>Fermentables</h2>
             <div id ="fermentableList">
-            @foreach (var f in Model.FermentablesUsed)
-            {
-                @Html.DisplayFor(m => f);
-            }
+                <ul>
+                    @for (int i = 0; i < Model.FermentablesUsed.Count; i++)
+                    {
+                        <li>
+                            <span>
+                                @Model.FermentablesUsed[i].Name <input type ="submit" name="submission" value="Delete Fermentable @Model.FermentablesUsed[i].Name" />
+                                @Html.HiddenFor(m => Model.FermentablesUsed[i].Name)
+                                @Html.HiddenFor(m => Model.FermentablesUsed[i].Color)
+                                @Html.HiddenFor(m => Model.FermentablesUsed[i].CourseGrainYield)
+                                @Html.HiddenFor(m => Model.FermentablesUsed[i].DiastaticPower)
+                                @Html.HiddenFor(m => Model.FermentablesUsed[i].Yield)
+                            </span>
+                        </li>
+                    }
+                </ul>
+                @for (int i = 0; i < Model.RemovedFermentables.Count; i++)
+                {
+                    @Html.HiddenFor(m => Model.RemovedFermentables[i])
+                }
             </div>
-            @Html.TextBoxFor(m=>m.HopToAdd, "Add Fermentable", new {@id = "addHopSearch"})
-            <a href="#" class="addItem" />
-            @Html.ActionLink("Create New Hop", "Create", "Ingredients", new {type = "fermentable"}, new {@class = "openNewFermentable", data_newFermentable_id = "newFermentableDialog", data_newFermentable_title = "New Fermentable"})
+            @Html.TextBoxFor(m=>m.FermentableToAdd.Name, "Add Fermentable", new {@id = "addFermentableSearch"})
+            <input type ="submit" name="submission" value="Add Fermentable" class="addItem" />
+            @Html.ActionLink("Create New Fermentable", "Create", "Ingredients", new {type = "fermentable"}, new {@class = "openNewFermentable", data_newFermentable_id = "newFermentableDialog", data_newFermentable_title = "New Fermentable"})
         </section>
     </section>
 
@@ -82,5 +114,5 @@
         <legend>Community</legend>
     </fieldset>
     
-    <input type="Submit" value="Apply"/>
+    <input type="Submit" name="submission" value="Apply"/>
 }

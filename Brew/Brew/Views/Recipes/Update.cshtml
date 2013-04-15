@@ -27,7 +27,31 @@
             });
             
             $("#addHopSearch").autocomplete({
-                source: "@Url.Action("List", "Ingredients", new {type="hops", format="json"})"
+                source: "@Url.Action("ListJson", "Ingredients", new {type="hop"})"
+            });
+
+            $(".openNewFermentable").on("click", function (e) {
+                e.preventDefault();
+
+                $("<div></div>")
+                    .addClass("newFermentable")
+                    .attr("id", $(this).attr("data-newFermentable-id"))
+                    .appendTo("body")
+                    .dialog({
+                        title: $(this).attr("data-newFermentable-title"),
+                        close: function () { $(this).remove() },
+                        modal: true,
+                    })
+                    .load(this.href);
+            });
+
+            $(".closeNewFermentable").on("click", function (e) {
+                e.preventDefault();
+                $(this).closest(".newFermentable").dialog("close");
+            });
+
+            $("#addFermentableSearch").autocomplete({
+                source: "@Url.Action("ListJson", "Ingredients", new {type="fermentable"})"
             });
             
         });
@@ -38,8 +62,8 @@
     <nav>
         <ul class="sortRecipes">
             <li>@Model.BeerName</li>
-            <li id="current">@Html.ActionLink("Details", "Show", new {Id = Model.BeerId}, null)</li>
-            <li>@Html.ActionLink("Comments", "Show", new {Id = Model.BeerId}, null)</li>
+            <li id="current">@Html.ActionLink("Details", "Show", new {name = Model.BeerName}, null)</li>
+            <li>@Html.ActionLink("Comments", "Show", new {name = Model.BeerName}, null)</li>
          </ul>
     </nav>
 }
