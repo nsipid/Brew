@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -12,10 +13,19 @@ namespace Brew.Controllers
         // GET: /BeerImage/
         public FileResult Index(string name)
         {
-            //TODO: read image from db by beer id
+            using (var context = new Models.ModelsContext())
+            {
+                var recipe = context.Recipes.Find(name);
+                if (recipe != null)
+                {
+                    if (recipe.Image != null)
+                    {
+                        return new FileContentResult(recipe.Image, "image/png");
+                    }
+                }
+            }
 
             return new FilePathResult("/Images/heroAccent.png", "image/png");
         }
-
     }
 }

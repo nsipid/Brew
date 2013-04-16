@@ -52,7 +52,7 @@
                         <div>avg</div>
                     </div>
                 </td>
-                <td><img src="@Url.Action("Index", "BeerImage", new { name = beer.Name })"/></td>
+                <td><img width="50" height="50" src="@Url.Action("Index", "BeerImage", new { name = beer.Name })"/></td>
                 <td>@Html.ActionLink(beer.Name, "Show", "Recipes", new {name = beer.Name}, null)</td> 
                 <td>@beer.Style</td>
                 <td>@beer.Abv%</td>

@@ -1,4 +1,5 @@
-﻿using Brew.Models;
+﻿using System.IO;
+using Brew.Models;
 using Brew.ViewModels;
 using Brew.ViewModels.Ingredients;
 using Brew.ViewModels.Recipes;
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using WebMatrix.WebData;
+using System.Web;
 
 
 namespace Brew.Controllers
@@ -471,6 +473,16 @@ namespace Brew.Controllers
                     recipeModel.Carbonation = vm.Carbonation;
                     recipeModel.FG = vm.FinalGravity;
                     recipeModel.OG = vm.OriginalGravity;
+
+                    if (vm.File != null && vm.File.ContentLength > 0)
+                    {
+                        var recipe = context.Recipes.Find(vm.BeerName);
+                        BinaryReader reader = new BinaryReader(vm.File.InputStream);
+                        vm.File.InputStream.Seek(0, SeekOrigin.Begin);
+                        var bytes = reader.ReadBytes((int)vm.File.InputStream.Length);
+
+                        recipe.Image = bytes;
+                    }
 
                     //replace mash profile
                     if (recipeModel.Mash != null)
