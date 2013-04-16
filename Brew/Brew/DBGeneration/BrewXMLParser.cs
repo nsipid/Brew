@@ -788,8 +788,33 @@ namespace Brew.DBGeneration
                
         public void Generate()
         {
-            ParseBeerXML("C:\\Projects\\Brew\\BeerXML\\btrecipes.xml");
+            //ParseBeerXML("C:\\Projects\\Brew\\BeerXML\\btrecipes.xml");
             //new Brew.DBGeneration.BrewXMLParser().Generate();  
+
+            // Add a user to a recipe... 
+            /*
+            using (var context = new Models.ModelsContext())
+            {
+                //var recipe = context.Recipes.Where(x => x.Name == "Bt: American Barleywine").Select(x => x);
+                //var user = context.UserProfiles.Where(x => x.UserId == 1).Select(x => x);
+
+                //recipe.Single().Brewers.Add(user.Single());
+
+                Random random = new Random();
+
+                var recipes = context.Recipes.Select(x => x).ToArray();
+                var users = context.UserProfiles.Select(x => x).ToArray();
+                foreach (var recipe in recipes)
+                {
+                    // select random user
+                    int i = random.Next(0, users.Length);
+                    recipe.Brewers.Add(users[i]);
+                }
+
+
+                context.SaveChanges();
+            }
+             * */
         }        
     }
 }
