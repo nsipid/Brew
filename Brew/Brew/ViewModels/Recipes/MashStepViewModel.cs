@@ -7,6 +7,7 @@ namespace Brew.ViewModels.Recipes
 {
     public class MashStepViewModel
     {
+        public int UID { get; set; }
         public string Name { get; set; }
         public string Type { get; set; }
         public float InfuseAmountLiters { get; set; } 
@@ -16,5 +17,6 @@ namespace Brew.ViewModels.Recipes
         public float InfuseTempCel { get; set; } 
         public float DecoctionAmount { get; set; }
         public int SequenceNumber { get; set; }
+        public TimeSpan RampTimeMin { get; set; }
     } 
 }

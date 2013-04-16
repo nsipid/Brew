@@ -39,5 +39,15 @@ namespace Brew.ViewModels
             PageSize = pageSize;
             LastPage = queryable.Count() / pageSize;
         }
+
+        public PagedList(IOrderedEnumerable<T> queryable, int pageNumber = 0, int pageSize = 30)
+        {
+            var queryablePage = queryable.Skip(pageSize * pageNumber).Take(pageSize);
+
+            this.singlePage = queryablePage.ToList();
+            CurrentPageNumber = pageNumber;
+            PageSize = pageSize;
+            LastPage = queryable.Count() / pageSize;
+        }
     }
 }

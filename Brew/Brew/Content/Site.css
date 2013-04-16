@@ -379,6 +379,14 @@ input, textarea {
     width: 300px;
 }
 
+td input {
+	color: #333;
+    font-size: 1.2em;
+    margin: 5px 0 6px 0;
+    padding: 5px;
+    width: 100px;
+}
+
 textarea {
     font-family: inherit;
     width: 500px;

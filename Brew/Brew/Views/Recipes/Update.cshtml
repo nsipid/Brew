@@ -1,71 +1,7 @@
 ﻿@model Brew.ViewModels.Recipes.DetailRecipeViewModel
 
 @section scripts{
-    <script type="text/javascript">
-
-        $.ajaxSetup({ cache: false });
-
-        $(document).ready(function() {
-            $(".openNewHop").on("click", function(e) {
-                e.preventDefault();
-
-                $("<div></div>")
-                    .addClass("newHop")
-                    .attr("id", $(this).attr("data-newHop-id"))
-                    .appendTo("body")
-                    .dialog({
-                        title: $(this).attr("data-newHop-title"),
-                        close: function() { $(this).remove() },
-                        modal: true
-                    })
-                    .load(this.href);
-            });
-
-            $(".closeNewHop").on("click", function(e) {
-                e.preventDefault();
-                $(this).closest(".newHop").dialog("close");
-            });
-
-            $("#addHopSearch").autocomplete({
-                source: "@Url.Action("ListJson", "Ingredients", new {type = "hop"})",
-                change: function(event, ui) {
-                    if (!ui.item) {
-                        $(this).val('');
-                    }
-                }
-            });
-
-            $(".openNewFermentable").on("click", function(e) {
-                e.preventDefault();
-
-                $("<div></div>")
-                    .addClass("newFermentable")
-                    .attr("id", $(this).attr("data-newFermentable-id"))
-                    .appendTo("body")
-                    .dialog({
-                        title: $(this).attr("data-newFermentable-title"),
-                        close: function() { $(this).remove() },
-                        modal: true,
-                    })
-                    .load(this.href);
-            });
-
-            $(".closeNewFermentable").on("click", function(e) {
-                e.preventDefault();
-                $(this).closest(".newFermentable").dialog("close");
-            });
-
-            $("#addFermentableSearch").autocomplete({
-                source: "@Url.Action("ListJson", "Ingredients", new {type = "fermentable"})",
-                change: function(event, ui) {
-                    if (!ui.item) {
-                        $(this).val('');
-                    }
-                }
-            });
-
-        });
-    </script>
+    @Html.Partial("_RecipeEditorOnReady")
 }
 
 @section sortRecipes {
