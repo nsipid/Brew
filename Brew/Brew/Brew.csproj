@@ -323,6 +323,7 @@
     <Content Include="Views\Ingredients\_FermentableTable.cshtml" />
     <Content Include="Views\Ingredients\DisplayTemplates\FermentableViewModel.cshtml" />
     <Content Include="Views\Ingredients\EditorTemplates\FermentableViewModel.cshtml" />
+    <Content Include="Views\Recipes\_RecipeEditorOnReady.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

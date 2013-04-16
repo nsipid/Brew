@@ -1,0 +1,83 @@
+﻿   <script type="text/javascript">
+        $.ajaxSetup({ cache: false });
+
+        $(document).ready(function () {
+            $(".openNewHop").on("click", function (e) {
+                e.preventDefault();
+
+                $("<div></div>")
+                    .addClass("newHop")
+                    .attr("id", $(this).attr("data-newHop-id"))
+                    .appendTo("body")
+                    .dialog({
+                        title: $(this).attr("data-newHop-title"),
+                        close: function () { $(this).remove() },
+                        modal: true
+                    })
+                    .load(this.href);
+            });
+
+            $(".closeNewHop").on("click", function (e) {
+                e.preventDefault();
+                $(this).closest(".newHop").dialog("close");
+            });
+
+            $("#addHopSearch").autocomplete({
+                source: "@Url.Action("ListJson", "Ingredients", new {type = "hop"})",
+                change: function (event, ui) {
+                    if (!ui.item) {
+                        $(this).val('');
+                    }
+                }
+            });
+
+            $(".openNewFermentable").on("click", function (e) {
+                e.preventDefault();
+
+                $("<div></div>")
+                    .addClass("newFermentable")
+                    .attr("id", $(this).attr("data-newFermentable-id"))
+                    .appendTo("body")
+                    .dialog({
+                        title: $(this).attr("data-newFermentable-title"),
+                        close: function () { $(this).remove() },
+                        modal: true,
+                    })
+                    .load(this.href);
+            });
+
+            $(".closeNewFermentable").on("click", function (e) {
+                e.preventDefault();
+                $(this).closest(".newFermentable").dialog("close");
+            });
+
+            $("#addFermentableSearch").autocomplete({
+                source: "@Url.Action("ListJson", "Ingredients", new {type = "fermentable"})",
+                change: function (event, ui) {
+                    if (!ui.item) {
+                        $(this).val('');
+                    }
+                }
+            });
+
+            var columnSizer = function (e, ui) {
+                ui.children().each(function () {
+                    $(this).width($(this).width());
+                });
+                return ui;
+            };
+
+            $("#mashSteps tbody").sortable({
+                helper: columnSizer,
+                stop: function (event, ui) {
+                    var order = $("#mashSteps tbody").sortable('toArray');
+                    for (var i = 0; i < order.length; i++) {
+                        var sortitem = $("#" + order[i] + "_Cell");
+                        var firstChild = sortitem[0].childNodes[0];
+                        firstChild.value = (i + 1);
+                    }
+                }
+            }).disableSelection();
+
+        });
+    </script>

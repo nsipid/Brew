@@ -1,14 +1,27 @@
 ﻿@model Brew.ViewModels.Recipes.DetailRecipeViewModel
 
-@using (Html.BeginForm("Update", "Recipes"))
+@using (Html.BeginForm(Model.IsNewRecipe ? "Create" :"Update", "Recipes"))
 {
+    @Html.HiddenFor(m => m.IsNewRecipe)
     <fieldset>
         <legend>Overview</legend>
-        <p>
-            @Html.LabelFor(m => m.BeerName)
-            @Html.TextBoxFor(m => m.BeerName)
-            @Html.ValidationMessageFor(m => m.BeerName)
-        </p>
+        @if (Model.IsNewRecipe)
+        {
+            <p>
+                @Html.LabelFor(m => m.BeerName)
+                @Html.TextBoxFor(m => m.BeerName)
+                @Html.ValidationMessageFor(m => m.BeerName)
+            </p>
+        }
+        else
+        {
+            <p>
+                @Html.LabelFor(m => m.BeerName)
+                @Html.DisplayFor(m => m.BeerName)
+                @Html.HiddenFor(m => m.BeerName)
+                @Html.ValidationMessageFor(m => m.BeerName)
+            </p>
+        }
         <p>
             @Html.LabelFor(m => m.Style)
             @Html.TextBoxFor(m => m.Style)
@@ -21,8 +34,7 @@
         </p>
         <p>
             @Html.LabelFor(m => m.Abv)
-            @Html.TextBoxFor(m => m.Abv)
-            @Html.ValidationMessageFor(m => m.Abv)
+            @Html.DisplayFor(m => m.Abv)
         </p>
     </fieldset>
 
@@ -82,7 +94,7 @@
             @Html.ActionLink("Create New Hop", "Create", "Ingredients", new {type = "hop"}, new {@class = "openNewHop", data_newHop_id = "newHopDialog", data_newHop_title = "New Hop"})
         </section>
         <section>
-        <h2>Fermentables</h2>
+            <h2>Fermentables</h2>
             <div id ="fermentableList">
                 <ul>
                     @for (int i = 0; i < Model.FermentablesUsed.Count; i++)
@@ -109,7 +121,81 @@
             @Html.ActionLink("Create New Fermentable", "Create", "Ingredients", new {type = "fermentable"}, new {@class = "openNewFermentable", data_newFermentable_id = "newFermentableDialog", data_newFermentable_title = "New Fermentable"})
         </section>
     </section>
+    
 
+if (Model.Mash != null)
+{
+     <section>
+         <h1>Mash</h1>
+         <dl>
+             <dt>@Html.LabelFor(m => m.Mash.Name)</dt>
+             <dd>@Html.DisplayFor(m => m.Mash.Name)</dd>
+             <dt>@Html.LabelFor(m => m.Mash.GrainTemp)</dt>
+             <dd>@Html.TextBoxFor(m => m.Mash.GrainTemp)</dd>
+             <dt>@Html.LabelFor(m => m.Mash.TunTemp)</dt>
+             <dd>@Html.TextBoxFor(m => m.Mash.TunTemp)</dd>
+             <dt>@Html.LabelFor(m => m.Mash.SpargeTemp)</dt>
+             <dd>@Html.TextBoxFor(m => m.Mash.SpargeTemp)</dd>
+             <dt>@Html.LabelFor(m => m.Mash.PH)</dt>
+             <dd>@Html.TextBoxFor(m => m.Mash.PH)</dd>
+             <dt>@Html.LabelFor(m => m.Mash.TunWeight)</dt>
+             <dd>@Html.TextBoxFor(m => m.Mash.TunWeight)</dd>
+             <dt>@Html.LabelFor(m => m.Mash.TunSpecificHeat)</dt>
+             <dd>@Html.TextBoxFor(m => m.Mash.TunSpecificHeat)</dd>
+             <dt>@Html.LabelFor(m => m.Mash.EquipAdjust)</dt>
+             <dd>@Html.TextBoxFor(m => m.Mash.EquipAdjust)</dd>
+             <dt>@Html.LabelFor(m => m.Mash.Notes)</dt>
+             <dd>@Html.TextBoxFor(m => m.Mash.Notes)</dd>
+         </dl>
+         <h2>Mash Steps</h2>
+     <table id ="mashSteps">
+         <thead>
+             <tr>
+                 <th scope="col">Name</th>
+                 <th scope="col">Type</th>
+                 <th scope="col">Infuse Amount (L)</th>
+                 <th scope="col">Ramp Time</th>
+                 <th scope="col">Step Temp (C)</th>
+                 <th scope="col">Step Time</th>
+                 <th scope="col">End Temp (C)</th>
+                 <th scope="col">Infuse Temp (C)</th>
+                 <th scope="col">Decoction Amount</th>
+                 <th scope="col"></th>
+                 <th style = "visibility:collapse" scope="col" />
+
+             </tr>
+         </thead>
+         <tbody>
+             @for (int i = 0; i < Model.Mash.Steps.Count; i++ )
+             {
+                 <tr id ="@Html.Raw("sortId_" + i)">
+                     <td>@Html.TextBoxFor(m => m.Mash.Steps[i].Name)</td>
+                     <td>@Html.TextBoxFor(m => m.Mash.Steps[i].Type)</td>
+                     <td>@Html.TextBoxFor(m => m.Mash.Steps[i].InfuseAmountLiters)</td>
+                     <td>@Html.TextBoxFor(m => m.Mash.Steps[i].RampTimeMin)</td>
+                     <td>@Html.TextBoxFor(m => m.Mash.Steps[i].StepTempCel)</td>
+                     <td>@Html.TextBoxFor(m => m.Mash.Steps[i].StepTimeMin)</td>
+                     <td>@Html.TextBoxFor(m => m.Mash.Steps[i].EndTempCel)</td>
+                     <td>@Html.TextBoxFor(m => m.Mash.Steps[i].InfuseTempCel)</td>
+                     <td>@Html.TextBoxFor(m => m.Mash.Steps[i].DecoctionAmount)</td>
+                     <td><input type ="submit" name="submission" value="Delete Mash Step @Model.Mash.Steps[i].UID" /></td>
+                     <td style = "visibility:collapse" id ="@Html.Raw("sortId_" + i + "_Cell")">@Html.HiddenFor(m => m.Mash.Steps[i].SequenceNumber)</td>
+                 </tr>
+             }
+         </tbody>
+     </table>
+         @for (int i = 0; i < Model.Mash.Steps.Count; i++)
+         {
+             @Html.HiddenFor(m => m.Mash.Steps[i].UID)
+         }
+         <input type ="submit" name="submission" value="Add Mash Step" class="addItem" />
+         <input type ="submit" name="submission" value="Delete Mash Profile" class="addItem" />
+     </section>
+ }
+else
+{
+  <input type ="submit" name="submission" value="Add Mash Profile" class="addItem" />
+}
     <fieldset>
         <legend>Community</legend>
     </fieldset>

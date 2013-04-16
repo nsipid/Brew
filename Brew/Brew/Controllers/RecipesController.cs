@@ -5,7 +5,6 @@ using Brew.ViewModels.Recipes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using WebMatrix.WebData;
 
@@ -14,40 +13,58 @@ namespace Brew.Controllers
 {
     public class RecipesController : Controller
     {
-        public ActionResult List(string sortby = "hoppin", int pageno = 0)
+        public ActionResult Create()
+        {
+            return View(new DetailRecipeViewModel{IsNewRecipe = true});
+        }
+
+        [HttpPost]
+        public ActionResult Create(DetailRecipeViewModel viewModel, string submission = "Apply")
+        {
+            return HandleRecipeEditor(viewModel, true, submission);
+        }
+
+        [HttpPost]
+        public ActionResult Delete(DetailRecipeViewModel vm)
         {
             using (var context = new Models.ModelsContext())
             {
-                IOrderedQueryable<RecipeListItemViewModel> recipes;
+                var removal = context.Recipes.Find(vm.BeerName);
+                context.Recipes.Remove(removal);
+                context.SaveChanges();
+            }
+
+            return RedirectToAction("List");
+        }
+
+        public ActionResult List(string sortby = "hoppin", int pageno = 0)
+        {           
+            using (var context = new Models.ModelsContext())
+            {
+                IOrderedEnumerable<RecipeListItemViewModel> recipes;
+                var allRecipes = context.Recipes.Include("Style").Include("Brewers").Select(r=>new RecipeListItemViewModel
+                        {
+                            Color = 33, // TODO: Using fake color
+                            Name = r.Name,
+                            Style = r.Style == null ? "Unknown" : r.Style.StyleType_Name,
+                            User = r.Brewers.Count == 0 ? r.Brewers.FirstOrDefault().UserName : "Unknown",
+                            OG = r.OG,
+                            FG = r.FG,
+                        }).ToList();
+
+                allRecipes.ForEach(r =>
+                    {
+                        r.SiteRating = Math.Round(Utilities.StatisticsUtils.GetSiteAvg(r.Name));
+                        r.AvgRating = Math.Round(Utilities.StatisticsUtils.GetLocalAvg(r.Name));
+                    });
 
                 if (sortby == "hoppin")
                 {
-                    recipes = context.Recipes.Select(r => new RecipeListItemViewModel 
-                        {
-                            AvgRating = r.TasteRating,
-                            Color = 33, // TODO: Using fake color
-                            Name = r.Name,
-                            SiteRating = r.SiteRating,
-                            Style = r.Style.StyleType_Name,
-                            User = r.Brewers.FirstOrDefault().UserName,
-                            OG = r.OG,
-                            FG = r.FG
-                        }).OrderBy(r => r.SiteRating);
+                    recipes = allRecipes.OrderByDescending(r => r.SiteRating);
                 }
                 else if (sortby == "fresh")
                 {
-                    recipes = context.Recipes.Select(r => new RecipeListItemViewModel
-                        {
-                            AvgRating = r.TasteRating,
-                            Color = 33, // TODO: Using fake color
-                            Name = r.Name,
-                            SiteRating = r.SiteRating,
-                            Style = r.Style.StyleType_Name,
-                            User = r.Brewers.FirstOrDefault().UserName,
-                            OG = r.OG,
-                            Date = r.Date,
-                            FG = r.FG
-                        }).OrderBy(p => p.Date);
+                    recipes = allRecipes.OrderBy(r => r.Date);
                 }
                 else
                 {
@@ -55,7 +72,11 @@ namespace Brew.Controllers
                 }
 
                 var recipePage = new PagedList<RecipeListItemViewModel>(recipes, pageno);
-
+                recipePage.CurrentPage.ForEach(p =>
+                    { 
+                        p.AvgRating = System.Math.Round(Utilities.StatisticsUtils.GetLocalAvg(p.Name));
+                        p.SiteRating = System.Math.Round(Utilities.StatisticsUtils.GetLocalAvg(p.Name));
+                    });
                 var viewModel = new RecipeListViewModel 
                     {
                         Beers = recipePage,
@@ -77,8 +98,8 @@ namespace Brew.Controllers
                 CommentsRecipeViewModel viewModel = new CommentsRecipeViewModel
                 {
                     BeerName = recipeModel.Name,
-                    AvgRating = recipeModel.TasteRating,
-                    SiteRating = recipeModel.SiteRating,
+                    AvgRating = System.Math.Round(Utilities.StatisticsUtils.GetLocalAvg(name), 2),
+                    SiteRating = System.Math.Round(Utilities.StatisticsUtils.GetSiteAvg(name), 2),
                     FlavorCounts = flavorCounts.ToDictionary(g => g.Key, g => g.Count),
                     CommentsCount = recipeComments.Count()                    
                 };
@@ -155,7 +176,7 @@ namespace Brew.Controllers
                             Type = r.Hop.HopType_Name,
                             UsageTimeMin = TimeSpan.FromMinutes(r.Time)
                         }).ToList();
-            // TODO: IBU, Color, NumRatings, YourRating;
+            // TODO: IBU, Color, YourRating;
         }
 
         private static List<FermentableViewModel> GetFermentablesUsed(Recipe recipeModel)
@@ -188,7 +209,7 @@ namespace Brew.Controllers
                 //Todo: compute color using color formula from grains
                 var recipeViewModel = new DetailRecipeViewModel
                 {
-                    AvgRating = System.Math.Round(Utilities.StatisticsUtils.GetLocalAvg(name)),
+                    AvgRating = System.Math.Round(Utilities.StatisticsUtils.GetLocalAvg(name),2),
                     BeerName = name,
                     Carbonation = recipeModel.Carbonation,
                     Creators = recipeModel.Brewers.Select(b => b.UserName).ToList(),
@@ -221,19 +242,21 @@ namespace Brew.Controllers
                             SpargeTemp = recipeModel.Mash.SpargeTemp,
                             TunSpecificHeat = recipeModel.Mash.TunSpecificHeat,
                             TunTemp = recipeModel.Mash.TunTemp,
-                            TunWeight = recipeModel.Mash.TunWeight,
+                            TunWeight = recipeModel.Mash.TunWeight,                          
                             Steps = recipeModel.Mash.Steps.Select(s => new MashStepViewModel
                                 {
+                                    UID = s.UID,
                                     DecoctionAmount = s.DecoctionAmount,
                                     EndTempCel = s.EndTemp,
                                     InfuseAmountLiters = s.InfuseAmount,
                                     SequenceNumber = s.SequenceNumber,
                                     StepTempCel = s.StepTemp,
                                     StepTimeMin = TimeSpan.FromMinutes(s.StepTime),
+                                    RampTimeMin = TimeSpan.FromMinutes(s.RampTime),
                                     InfuseTempCel = s.InfuseTemp,
                                     Name = s.Name,
                                     Type = s.MashStepType_Name
-                                }).ToList()
+                                }).OrderBy(s => s.SequenceNumber).ToList()
                         };
 
                     recipeViewModel.Mash = mash;
@@ -297,7 +320,7 @@ namespace Brew.Controllers
             return result;
         }
 
-        private ActionResult PartialHopDelete(DetailRecipeViewModel vm, string name)
+        private ActionResult PartialHopDelete(DetailRecipeViewModel vm, string name, bool isNewRecipe)
         {
             if (name != null)
             {
@@ -305,10 +328,10 @@ namespace Brew.Controllers
                 vm.RemovedHops.Add(name);
                 vm.HopsUsed.Remove(removal);                  
             }
-            return View("Update", vm);
+            return isNewRecipe ? View("Create", vm) : View("Update", vm);
         }
 
-        private ActionResult PartialHopAdd(DetailRecipeViewModel vm, ModelsContext context)
+        private ActionResult PartialHopAdd(DetailRecipeViewModel vm, ModelsContext context, bool isNewRecipe)
         {
             if (vm.HopToAdd != null)
             {
@@ -333,11 +356,11 @@ namespace Brew.Controllers
                         AmountKg = vm.HopToAdd.AmountKg,
                     });
             }
-            
-            return View("Update", vm);
+
+            return isNewRecipe ? View("Create", vm) : View("Update", vm);
         }
 
-        private ActionResult PartialFermentableAdd(DetailRecipeViewModel vm, ModelsContext context)
+        private ActionResult PartialFermentableAdd(DetailRecipeViewModel vm, ModelsContext context, bool isNewRecipe)
         {
             if (vm.FermentableToAdd != null)
             {
@@ -357,10 +380,10 @@ namespace Brew.Controllers
                     Amount = vm.FermentableToAdd.Amount,
                 });
             }
-            return View("Update", vm);
+            return isNewRecipe ? View("Create", vm) : View("Update", vm);
         }
 
-        private ActionResult PartialFermentableDelete(DetailRecipeViewModel vm, string name)
+        private ActionResult PartialFermentableDelete(DetailRecipeViewModel vm, string name, bool isNewRecipe)
         {
             if (name != null)
             {
@@ -368,7 +391,41 @@ namespace Brew.Controllers
                 vm.RemovedFermentables.Add(name);
                 vm.FermentablesUsed.Remove(removal);
             }
-            return View("Update", vm);
+            return isNewRecipe ? View("Create", vm) : View("Update", vm);
+        }
+
+        private ActionResult PartialMashStepAdd(DetailRecipeViewModel vm, bool isNewRecipe)
+        {
+            if ( vm.Mash != null)
+            {
+                vm.Mash.Steps.Add(new MashStepViewModel());
+            }
+
+            return isNewRecipe ? View("Create", vm) : View("Update", vm);
+        }
+
+        private ActionResult PartialMashStepDelete(DetailRecipeViewModel vm, int uid, bool isNewRecipe)
+        {
+
+            var removal = vm.Mash.Steps.FirstOrDefault(u => u.UID == uid);
+            vm.Mash.Steps.Remove(removal);
+            ModelState.Clear();
+            return isNewRecipe ? View("Create", vm) : View("Update", vm);
+        }
+
+        private ActionResult PartialMashProfileAdd(DetailRecipeViewModel vm, bool isNewRecipe)
+        {
+            vm.Mash = new MashProfileViewModel();
+            ModelState.Clear();
+            return isNewRecipe ? View("Create", vm) : View("Update", vm);
+        }
+
+        private ActionResult PartialMashProfileDelete(DetailRecipeViewModel vm, bool isNewRecipe)
+        {
+            vm.Mash = null;
+            ModelState.Clear();
+
+            return isNewRecipe ? View("Create",vm) : View("Update", vm);
         }
 
         [HttpPost]
@@ -392,11 +449,17 @@ namespace Brew.Controllers
         }
 
         [HttpPost]
-        public ActionResult Update(DetailRecipeViewModel vm, string submission)
+        public ActionResult Update(DetailRecipeViewModel vm, string submission = "Apply")
+        {
+            return HandleRecipeEditor(vm, false, submission);
+        }
+
+        public ActionResult HandleRecipeEditor(DetailRecipeViewModel vm, bool isNewRecipe, string submission = "Apply")
         {
             using (var context = new ModelsContext())
             {
-                var recipeModel = context.Recipes.Find(vm.BeerName);
+                Recipe recipeModel;
+                recipeModel = !isNewRecipe ? context.Recipes.Find(vm.BeerName) : new Recipe() {Name = vm.BeerName, Date = DateTime.Now};
 
                 vm.HopsUsed = vm.HopsUsed ?? GetHopsUsed(recipeModel);
                 vm.FermentablesUsed = vm.FermentablesUsed ?? GetFermentablesUsed(recipeModel);
@@ -405,10 +468,60 @@ namespace Brew.Controllers
 
                 if (ModelState.IsValid && submission == "Apply")
                 {
-                   
                     recipeModel.Carbonation = vm.Carbonation;
                     recipeModel.FG = vm.FinalGravity;
                     recipeModel.OG = vm.OriginalGravity;
+
+                    //replace mash profile
+                    if (recipeModel.Mash != null)
+                    {
+                        List<MashStep> toRemove = recipeModel.Mash.Steps.ToList();
+                        foreach (var step in toRemove)
+                        {
+                            context.MashSteps.Remove(step);
+                        }
+                        context.MashProfiles.Remove(recipeModel.Mash);        
+                    }
+                    if (vm.Mash != null)
+                    {
+
+                        recipeModel.Mash = new MashProfile();
+                        recipeModel.Mash.EquipAdjust = vm.Mash.EquipAdjust;
+                        recipeModel.Mash.Name = vm.Mash.Name;
+                        recipeModel.Mash.GrainTemp = vm.Mash.GrainTemp;
+                        recipeModel.Mash.PH = vm.Mash.PH;
+                        recipeModel.Mash.SpargeTemp = vm.Mash.SpargeTemp;
+                        recipeModel.Mash.TunSpecificHeat = vm.Mash.TunSpecificHeat;
+                        recipeModel.Mash.TunTemp = vm.Mash.TunTemp;
+                        recipeModel.Mash.Notes = vm.Mash.Notes;
+                        recipeModel.Mash.TunWeight = vm.Mash.TunWeight;
+                        vm.Mash.Steps = vm.Mash.Steps ?? new List<MashStepViewModel>();
+                        for (int i = 0; i < vm.Mash.Steps.Count; i++)
+                        {
+                            var stepVm = vm.Mash.Steps[i];
+                            var stepModel = new MashStep
+                                {
+                                    Name = stepVm.Name,
+                                    EndTemp = stepVm.EndTempCel,
+                                    DecoctionAmount = stepVm.DecoctionAmount,
+                                    InfuseAmount = stepVm.InfuseAmountLiters,
+                                    InfuseTemp = stepVm.InfuseTempCel,
+                                    MashStepType_Name = stepVm.Type,
+                                    RampTime = (float) stepVm.RampTimeMin.TotalMinutes,
+                                    SequenceNumber = stepVm.SequenceNumber,
+                                    StepTemp = stepVm.StepTempCel,
+                                    StepTime = (float) stepVm.StepTimeMin.TotalMinutes,                                    
+                                };
+
+                            recipeModel.Mash.Steps.Add(stepModel);
+                        }
+                        context.MashProfiles.Add(recipeModel.Mash);
+                    }
+
+                    if (isNewRecipe)
+                    {
+                        context.Recipes.Add(recipeModel);
+                    }
 
                     //add new hops
                     foreach (var hopVm in vm.HopsUsed)
@@ -471,45 +584,48 @@ namespace Brew.Controllers
                 var errors =
                     ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new {x.Key, x.Value.Errors}).ToArray();
 
-                //ModelState.Clear();
-                //var newModelState = new DetailRecipeViewModel();
-                //newModelState.BeerName = vm.BeerName;
-                //newModelState.HopsUsed = vm.HopsUsed ?? GetHopsUsed(recipeModel);
-                //newModelState.FermentablesUsed = vm.FermentablesUsed ?? GetFermentablesUsed(recipeModel);
-                //newModelState.RemovedHops = vm.RemovedHops ?? new List<string>();
-                //newModelState.RemovedFermentables = vm.RemovedFermentables ?? new List<string>();
-                //newModelState.HopToAdd = vm.HopToAdd;
-                //newModelState.FermentableToAdd = vm.FermentableToAdd;
-                //newModelState.Carbonation = vm.Carbonation;
-                //newModelState.Color = vm.Color;
-                //newModelState.FinalGravity = vm.FinalGravity;
-                //newModelState.OriginalGravity = vm.OriginalGravity;
-
                 if (submission.StartsWith("Delete Hop"))
                 {
-                    return PartialHopDelete(vm, submission.Substring(11));
+                    return PartialHopDelete(vm, submission.Substring(11), isNewRecipe);
                 }
 
                 if (submission == "Add Hop")
                 {
-                    return PartialHopAdd(vm, context);
+                    return PartialHopAdd(vm, context, isNewRecipe);
                 }
 
                 if (submission.StartsWith("Delete Fermentable"))
                 {
-                    return PartialFermentableDelete(vm, submission.Substring(19));
+                    return PartialFermentableDelete(vm, submission.Substring(19), isNewRecipe);
                 }
 
                 if (submission == "Add Fermentable")
                 {
-                    return PartialFermentableAdd(vm, context);
+                    return PartialFermentableAdd(vm, context, isNewRecipe);
                 }
 
- 
-                else
+                if (submission == "Add Mash Step")
                 {
-                    return View("Update", vm);
+                    return PartialMashStepAdd(vm, isNewRecipe);
                 }
+
+                if (submission.StartsWith("Delete Mash Step"))
+                {
+                    return PartialMashStepDelete(vm, int.Parse(submission.Substring(17)), isNewRecipe);
+                }
+
+                if (submission == "Delete Mash Profile")
+                {
+                    return PartialMashProfileDelete(vm, isNewRecipe);
+                }
+
+                if (submission == "Add Mash Profile")
+                {
+                    return PartialMashProfileAdd(vm, isNewRecipe);
+                }
+
+                return isNewRecipe ? View("Create", vm) : View("Update", vm);
+
             }
         }
     }

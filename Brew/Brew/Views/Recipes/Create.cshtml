@@ -1,5 +1,17 @@
-﻿@{
-    ViewBag.Title = "Create";
+﻿@model Brew.ViewModels.Recipes.DetailRecipeViewModel
+
+@section scripts{
+    @Html.Partial("_RecipeEditorOnReady")
 }
 
-<h2>Create</h2>
+@section sortRecipes {
+    <nav>
+        <ul class="sortRecipes">
+            <li>@Model.BeerName</li>
+            <li id="current">@Html.ActionLink("Details", "Show", new {name = Model.BeerName}, null)</li>
+            <li>@Html.ActionLink("Comments", "Show", new {name = Model.BeerName}, null)</li>
+         </ul>
+    </nav>
+}
+
+@Html.EditorForModel()

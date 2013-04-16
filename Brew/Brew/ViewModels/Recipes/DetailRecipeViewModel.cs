@@ -6,6 +6,7 @@ namespace Brew.ViewModels.Recipes
 {
     public class DetailRecipeViewModel : RecipeViewModel
     {
+        public bool IsNewRecipe { get; set; }
         public string Style { get; set; }
 
         public string RecipeType { get; set; }
@@ -49,5 +50,12 @@ namespace Brew.ViewModels.Recipes
         /// </summary>
         public FermentableViewModel FermentableToAdd { get; set; }
 
+        public DetailRecipeViewModel()
+        {
+            HopsUsed = new List<HopViewModel>();
+            FermentablesUsed = new List<FermentableViewModel>();
+            RemovedFermentables = new List<string>();
+            RemovedHops = new List<string>();
+        }
     }
 }
