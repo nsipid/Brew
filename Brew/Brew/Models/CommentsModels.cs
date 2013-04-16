@@ -28,9 +28,12 @@ namespace Brew.Models
         public Recipe Recipe { get; set; }
 
         [Key, Column(Order = 2)]
-        public System.DateTime Timestamp { get; set; }
-        [Required]//, StringLength(50), ForeignKey("FlavorProfile")]
+        public System.DateTime Timestamp { get; set; }      
         public FlavorProfile FlavorProfile { get; set; }
+
+        [Required, StringLength(50), ForeignKey("FlavorProfile")]
+        public string FlavorProfile_Name { get; set; }
+
         [StringLength(250)]
         public string Text { get; set; }
     }

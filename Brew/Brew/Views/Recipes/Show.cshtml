@@ -6,8 +6,8 @@
     <nav>
         <ul class="sortRecipes">
             <li>@Model.BeerName</li>
-            <li id="current">@Html.ActionLink("Details", "Show", new {name = Model.BeerName}, null)</li>
-            <li>@Html.ActionLink("Comments", "Show", new {name = Model.BeerName}, null)</li>
+            <li id="current">@Html.ActionLink("Details", "Show", new {name = Model.BeerName, tab = "details"}, null)</li>
+            <li>@Html.ActionLink("Comments", "Show", new {name = Model.BeerName, tab = "comments"}, null)</li>
          </ul>
     </nav>
 }

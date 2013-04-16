@@ -1,1 +1,49 @@
-﻿<h1>Comments Template!</h1>
+﻿@model Brew.ViewModels.Recipes.CommentsRecipeViewModel
+
+<h1>Comments for @Html.DisplayTextFor(m => m.BeerName)</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Flavor</th>
+            <th scope="col">Text</th>
+            <th scope="col">Poster</th>        
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var comment in Model.Comments)
+        {
+            <tr>                
+                <td>@comment.Flavor</td>
+                <td>@comment.Text</td>
+                <td>@comment.Text</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (Request.IsAuthenticated) {
+    using (Html.BeginForm("CreateComment", "Recipes"))
+    {
+    
+        <fieldset>
+            <legend>Overview</legend>
+            <p>
+                @Html.DropDownListFor(
+                    m => m.Flavor, 
+                    new SelectList(Model.Flavors),
+                    "-- Select Flavor --"
+                )
+            </p>
+            <p>
+                @Html.LabelFor(m => m.Text)
+                @Html.TextAreaFor(m => m.Text)
+                @Html.ValidationMessageFor(m => m.Text)
+
+                @Html.HiddenFor(m => m.BeerName)
+            </p>  
+        <BR />
+        </fieldset>
+        <input type="submit" value="Submit Comment" />
+    }
+}

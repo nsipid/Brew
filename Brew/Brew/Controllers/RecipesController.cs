@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using WebMatrix.WebData;
+
 
 namespace Brew.Controllers
 {
@@ -83,6 +85,8 @@ namespace Brew.Controllers
                     Text = c.Text,
                     Poster = c.UserProfile.UserName
                 }).ToList();
+
+                viewModel.Flavors = context.FlavorProfiles.Select(c => c.Name).ToList();
 
                 return viewModel;
             }
@@ -322,6 +326,26 @@ namespace Brew.Controllers
                 vm.FermentablesUsed.Remove(removal);
             }
             return View("Update", vm);
+        }
+
+        [HttpPost]
+        public ActionResult CreateComment(CommentsRecipeViewModel vm, CommentViewModel cm)
+        {
+            using (var context = new ModelsContext())
+            {
+                Models.Comment comment = new Comment();
+                comment.Recipe_Name = vm.BeerName;
+                comment.Timestamp = DateTime.Today;
+                comment.UserProfile_UserID = WebSecurity.GetUserId(User.Identity.Name);
+                comment.Text = cm.Text;
+                comment.FlavorProfile_Name = cm.Flavor;
+
+                context.Comments.Add(comment);
+                context.SaveChanges();
+            }
+
+            
+            return RedirectToAction("Show", new { name = vm.BeerName, tab="comments" });
         }
 
         [HttpPost]
