@@ -11,7 +11,7 @@ namespace Brew.ViewModels.Recipes
     {
         public double SiteRating { get; set; }
         public double AvgRating { get; set; }
-        public double Abv { get { return Utilities.BrewCharacteristicAlgs.CalculateABV(OG, FG); } }
+        public double Abv { get { return System.Math.Round(Utilities.BrewCharacteristicAlgs.CalculateABV(OG, FG),2); } }
         public double FG { get; set; }
         public string Name { get; set; }
         public double OG { get; set; }

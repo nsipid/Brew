@@ -12,7 +12,7 @@
     </nav>
 }
 
-@*<script>
+<script>
 
     var iFWCenterX = 300;
     var iFWCenterY = 300;
@@ -1037,39 +1037,18 @@
 
     //init flavor wheel
     var oFW = new FlavorWheelObj(iFWMinR, iFWMiddle1R, iFWMiddle2R, iFWMaxR);
-</script>*@
+</script>
 
 <!--turn on relevant sections of the flavor wheel-->
-@*@foreach(string strName in Model.FlavorCounts.Keys) {
+@foreach(string strName in Model.FlavorCounts.Keys) {
     <script> 
         str = "@strName";
         count = "@Model.FlavorCounts[strName]" / "@Model.CommentsCount";
         oFW[str].setPctOn(count);
     </script>
-}*@
-
-@{
-    //List<double> oDataItems = new List<double>();
-    //oDataItems.Add(2); oDataItems.Add(2); oDataItems.Add(3); oDataItems.Add(4); oDataItems.Add(14);
-    //double dAbsDev1 = StatisticsUtils.GetAbsDev(5, oDataItems);
-    //double dAbsDev2 = StatisticsUtils.GetAbsDev(3, oDataItems);
-    //double dAbsDev3 = StatisticsUtils.GetAbsDev(2, oDataItems);
-    //<script>alert(@dAbsDev1); alert(@dAbsDev2); alert(@dAbsDev3);</script>
-    
-    //double dBayesianAvg1 = StatisticsUtils.GetBayesianAvg(176, 2865, 10, 15);
-    //double dBayesianAvg2 = StatisticsUtils.GetBayesianAvg(176, 1790, 10, 10);
-    //double dBayesianAvg3 = StatisticsUtils.GetBayesianAvg(176, 201, 10, 1);
-    //<script>alert(@dBayesianAvg1); alert(@dBayesianAvg2); alert(@dBayesianAvg3);</script>
-    
-    //long lCount; double dSum; double dAvg;
-    //StatisticsUtils.GetRecipeRatingsSimpleStats("Bt: Saison", out lCount, out dSum, out dAvg);
-    //<script>alert(@lCount); alert(@dSum); alert(@dAvg);</script>
-
-    //double dSiteAvg = StatisticsUtils.GetSiteAvg("Bt: Saison");
-    //<script>alert(@dSiteAvg);</script>
 }
 
-@*<canvas id="flavorWheel" width="602" height="602" style="float:right"> 
+<canvas id="flavorWheel" width="602" height="602" style="float:right"> 
 <script>
 
     var c = document.getElementById("flavorWheel");
@@ -1079,14 +1058,13 @@
     ctx.translate(0.5, 0.5);    
 
     //render FW sections
-    for (i = oFW.oSlices.length - 1; i >= 0; i--) {
+    for (i = oFW.oSlices.length - 1; i >= 0; i--) 
         oFW.oSlices[i].render(ctx, iFWCenterX, iFWCenterY, true);
-    }
 
     ctx.restore();
 
 </script>
-</canvas>*@
+</canvas>
 
 @Html.DisplayForModel()
 @Html.ActionLink("Edit", "Update", new { name = Model.BeerName }, null)

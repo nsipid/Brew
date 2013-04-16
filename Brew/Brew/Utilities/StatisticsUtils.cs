@@ -7,6 +7,21 @@ namespace Brew.Utilities
 {
     public class StatisticsUtils
     {
+        public static double GetLocalAvg(string strBeerName)
+        {
+            long lRecipeRatingsCount;
+            double dRecipeRatingsSum;
+            double dRecipeRatingsAvg;
+            using (var context = new Models.ModelsContext())
+            {
+                GetRecipeRatingsSimpleStats(strBeerName,
+                                            out lRecipeRatingsCount,
+                                            out dRecipeRatingsSum,
+                                            out dRecipeRatingsAvg);
+            }
+            return dRecipeRatingsAvg;
+        }
+
         public static double GetSiteAvg(string strBeerName)
         {
             Dictionary<string, long> oFlavorCounts = new Dictionary<string, long>();

@@ -20,5 +20,8 @@ namespace Brew.ViewModels.Recipes
         public ulong NumRatings { get; set; }
 
         public DateTime PostedDate { get; set; }
+
+        public Dictionary<string, long> FlavorCounts { get; set; }
+        public long CommentsCount { get; set; } 
     }
 }

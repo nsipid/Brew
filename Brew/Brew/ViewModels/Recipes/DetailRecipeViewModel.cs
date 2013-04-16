@@ -11,7 +11,7 @@ namespace Brew.ViewModels.Recipes
         public string RecipeType { get; set; }
 
         [ReadOnly(true)]
-        public double Abv { get { return Utilities.BrewCharacteristicAlgs.CalculateABV(OriginalGravity, FinalGravity); } }
+        public double Abv { get { return System.Math.Round(Utilities.BrewCharacteristicAlgs.CalculateABV(OriginalGravity, FinalGravity), 2); } }
 
         public float OriginalGravity { get; set; }
 
@@ -49,7 +49,5 @@ namespace Brew.ViewModels.Recipes
         /// </summary>
         public FermentableViewModel FermentableToAdd { get; set; }
 
-        public Dictionary<string, long> FlavorCounts { get; set; }
-        public long CommentsCount { get; set; }   
     }
 }

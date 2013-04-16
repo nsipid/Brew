@@ -70,13 +70,17 @@ namespace Brew.Controllers
         {
             using (var context = new Models.ModelsContext())
             {
+                var flavorCounts = from c in context.Comments where c.Recipe_Name == name group c by c.FlavorProfile.Name into g select new { Key = g.Key, Count = g.LongCount() };
+                var recipeComments = from c in context.Comments where c.Recipe_Name == name select c.Timestamp;
                 var recipeModel = context.Recipes.Find(name);
 
                 CommentsRecipeViewModel viewModel = new CommentsRecipeViewModel
                 {
                     BeerName = recipeModel.Name,
                     AvgRating = recipeModel.TasteRating,
-                    SiteRating = recipeModel.SiteRating
+                    SiteRating = recipeModel.SiteRating,
+                    FlavorCounts = flavorCounts.ToDictionary(g => g.Key, g => g.Count),
+                    CommentsCount = recipeComments.Count()
                 };
 
                 viewModel.Comments = context.Comments.Where(c => c.Recipe_Name == name).Select(c => new CommentViewModel
@@ -138,6 +142,7 @@ namespace Brew.Controllers
             using (var context = new Models.ModelsContext())
             {
                 var flavorCounts = from c in context.Comments where c.Recipe_Name == name group c by c.FlavorProfile.Name into g select new { Key = g.Key, Count = g.LongCount() };
+                var recipeComments = from c in context.Comments where c.Recipe_Name == name select c.Timestamp;
                 var recipeModel = context.Recipes.Find(name);
 
                 if (recipeModel == null) return null;
@@ -145,7 +150,7 @@ namespace Brew.Controllers
                 //Todo: compute color using color formula from grains
                 var recipeViewModel = new DetailRecipeViewModel
                 {
-                    AvgRating = recipeModel.TasteRating,
+                    AvgRating = System.Math.Round(Utilities.StatisticsUtils.GetLocalAvg(name)),
                     BeerName = name,
                     Carbonation = recipeModel.Carbonation,
                     Creators = recipeModel.Brewers.Select(b => b.UserName).ToList(),
@@ -153,10 +158,10 @@ namespace Brew.Controllers
                     OriginalGravity = recipeModel.OG,
                     PostedDate = recipeModel.Date,
                     RecipeType = recipeModel.RecipieType_Name,
-                    SiteRating = recipeModel.SiteRating,
+                    SiteRating = System.Math.Round(Utilities.StatisticsUtils.GetSiteAvg(name),2),
                     Style = recipeModel.Style == null ? "Unknown" : recipeModel.Style.StyleType_Name,
                     FlavorCounts = flavorCounts.ToDictionary(g => g.Key, g => g.Count),
-                    CommentsCount = context.Comments.Count(),
+                    CommentsCount = recipeComments.Count(),
                     FermentablesUsed = GetFermentablesUsed(recipeModel),
                     RemovedFermentables = new List<string>(),
                     RemovedHops = new List<string>(),
