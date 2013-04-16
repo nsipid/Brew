@@ -24,8 +24,21 @@ namespace Brew.Controllers
             return HandleRecipeEditor(viewModel, true, submission);
         }
 
-        public ActionResult List(string sortby = "hoppin", int pageno = 0)
+        [HttpPost]
+        public ActionResult Delete(DetailRecipeViewModel vm)
         {
+            using (var context = new Models.ModelsContext())
+            {
+                var removal = context.Recipes.Find(vm.BeerName);
+                context.Recipes.Remove(removal);
+                context.SaveChanges();
+            }
+
+            return RedirectToAction("List");
+        }
+
+        public ActionResult List(string sortby = "hoppin", int pageno = 0)
+        {           
             using (var context = new Models.ModelsContext())
             {
                 IOrderedEnumerable<RecipeListItemViewModel> recipes;

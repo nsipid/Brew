@@ -14,4 +14,10 @@
     </nav>
 }
 
+@using (Html.BeginForm("Delete", "Recipes", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.BeerName);
+    <input type="submit" name="submission" value="Delete Recipe" />
+}
+
 @Html.EditorForModel()
