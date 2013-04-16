@@ -80,7 +80,7 @@ namespace Brew.Controllers
                     AvgRating = recipeModel.TasteRating,
                     SiteRating = recipeModel.SiteRating,
                     FlavorCounts = flavorCounts.ToDictionary(g => g.Key, g => g.Count),
-                    CommentsCount = recipeComments.Count()
+                    CommentsCount = recipeComments.Count()                    
                 };
 
                 viewModel.Comments = context.Comments.Where(c => c.Recipe_Name == name).Select(c => new CommentViewModel
@@ -91,9 +91,47 @@ namespace Brew.Controllers
                 }).ToList();
 
                 viewModel.Flavors = context.FlavorProfiles.Select(c => c.Name).ToList();
+                viewModel.Top3Flavors = GetTop3Flavors(viewModel.FlavorCounts);
 
                 return viewModel;
             }
+        }
+
+        private static Tuple<string, string, string> GetTop3Flavors(Dictionary<string, long> oFlavorCounts)
+        {
+            string strFlav1 = "";
+            string strFlav2 = "";
+            string strFlav3 = "";
+            long lFlav1Count = 0;
+            long lFlav2Count = 0;
+            long lFlav3Count = 0;
+
+            foreach(string strFlavor in oFlavorCounts.Keys)
+            {
+                if(oFlavorCounts[strFlavor] >= lFlav1Count)
+                {
+                    strFlav3 = strFlav2;
+                    lFlav3Count = lFlav2Count;
+                    strFlav2 = strFlav1;
+                    lFlav2Count = lFlav1Count;
+                    strFlav1 = strFlavor;
+                    lFlav1Count = oFlavorCounts[strFlavor];
+                }
+                else if(oFlavorCounts[strFlavor] >= lFlav2Count)
+                {
+                    strFlav3 = strFlav2;
+                    lFlav3Count = lFlav2Count;
+                    strFlav2 = strFlavor;
+                    lFlav2Count = oFlavorCounts[strFlavor];
+                }
+                else if(oFlavorCounts[strFlavor] >= lFlav3Count)
+                {
+                    strFlav3 = strFlavor;
+                    lFlav3Count = oFlavorCounts[strFlavor];
+                }
+            }
+
+            return new Tuple<string, string, string>(strFlav1, strFlav2, strFlav3);
         }
 
         private static List<HopViewModel> GetHopsUsed(Recipe recipeModel)

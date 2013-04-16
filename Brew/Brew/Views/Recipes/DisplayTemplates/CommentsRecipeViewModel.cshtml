@@ -1,5 +1,42 @@
 ﻿@model Brew.ViewModels.Recipes.CommentsRecipeViewModel
 
+<div>
+    <img src="@Url.Action("Index", "BeerImage", new { name = Model.BeerName })"/>
+</div>
+
+<section>
+    <h1>Overview</h1>
+    <dl>
+        <dt>@Html.DisplayNameFor(m => m.BeerName)</dt>
+        <dd>@Html.DisplayTextFor(m => m.BeerName)</dd>
+    </dl>
+</section>
+
+<section>
+    <h1>Community</h1>
+    <dl>
+        <dt>@Html.DisplayNameFor(m => m.YourRating)</dt>
+        <dd>@Html.DisplayTextFor(m => m.YourRating)</dd>
+        <dt>@Html.DisplayNameFor(m => m.SiteRating)</dt>
+        <dd>@Html.DisplayTextFor(m => m.SiteRating)</dd>
+        <dt>@Html.DisplayNameFor(m => m.AvgRating)</dt>
+        <dd>@Html.DisplayTextFor(m => m.AvgRating)</dd>
+        <dt>@Html.DisplayNameFor(m => m.PostedDate)</dt>
+        <dd>@Html.DisplayTextFor(m => m.PostedDate)</dd>
+    </dl>
+</section>
+
+<section>
+    <h1>Top 3 Flavors:</h1>
+    <dl>
+        <dt>@Model.Top3Flavors.Item1</dt>
+        <dt>@Model.Top3Flavors.Item2</dt>
+        <dt>@Model.Top3Flavors.Item3</dt>
+    </dl>
+</section>
+
+<br /> <br /> <br /> <br /> <br />
+
 <h1>Comments for @Html.DisplayTextFor(m => m.BeerName)</h1>
 
 <table>

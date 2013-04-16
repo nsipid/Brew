@@ -182,7 +182,7 @@
             if (this.fPercentOn > 0) {
                 oRGBFill = interpolateBetween(this.oFillColorOff,
                                               this.oFillColorOn,
-                                              this.fPercentOn);
+                                              this.fPercentOn + 0.1);
                 oRGBStroke = interpolateBetween(this.oStrokeColorOff,
                                                 this.oStrokeColorOn,
                                                 this.fPercentOn);

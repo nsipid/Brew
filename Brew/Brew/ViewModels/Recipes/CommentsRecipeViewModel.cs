@@ -11,5 +11,6 @@ namespace Brew.ViewModels.Recipes
         public List<string> Flavors { get; set; }
         public string Flavor { get; set; }
         public string Text { get; set; }
+        public Tuple<string, string, string> Top3Flavors { get; set; }
     }
 }
