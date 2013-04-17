@@ -68,10 +68,11 @@ namespace Brew.Controllers
         {           
             using (var context = new Models.ModelsContext())
             {
+                var random = new Random();
                 IOrderedEnumerable<RecipeListItemViewModel> recipes;
                 var allRecipes = context.Recipes.Include("Style").Include("Brewers").Select(r=>new RecipeListItemViewModel
                         {
-                            Color = 33, // TODO: Using fake color
+                            
                             Name = r.Name,
                             Style = r.Style == null ? "Unknown" : r.Style.StyleType_Name,
                             User = r.Brewers.Count == 0 ? "Unknown" : r.Brewers.FirstOrDefault().UserName,
@@ -81,6 +82,7 @@ namespace Brew.Controllers
 
                 allRecipes.ForEach(r =>
                     {
+                        r.Color = random.Next(1, 60);
                         r.SiteRating = Math.Round(Utilities.StatisticsUtils.GetSiteAvg(r.Name));
                         r.AvgRating = Math.Round(Utilities.StatisticsUtils.GetLocalAvg(r.Name));
                     });
@@ -247,6 +249,7 @@ namespace Brew.Controllers
                     Rating = ratingScore,
                     AvgRating = System.Math.Round(Utilities.StatisticsUtils.GetLocalAvg(name),2),
                     BeerName = name,
+                    Color = new Random().Next(1,60),
                     Carbonation = recipeModel.Carbonation,
                     Creators = recipeModel.Brewers.Select(b => b.UserName).ToList(),
                     FinalGravity = recipeModel.FG,
