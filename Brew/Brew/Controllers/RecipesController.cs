@@ -39,6 +39,31 @@ namespace Brew.Controllers
             return RedirectToAction("List");
         }
 
+        [HttpPost]
+        public ActionResult UpdateRating(DetailRecipeViewModel vm)
+        {
+            using (var context = new Models.ModelsContext())
+            {
+                int userID = WebSecurity.GetUserId(User.Identity.Name);
+                var rating = context.Ratings.Where(x => x.Recipe_Name == vm.BeerName && x.UserProfile_UserID == userID).Select(x => x);
+                if (rating.Count() == 0)
+                {
+                    Models.Rating newRating = new Rating();
+                    newRating.Recipe_Name = vm.BeerName;
+                    newRating.UserProfile_UserID = WebSecurity.GetUserId(User.Identity.Name);
+                    newRating.Rating_Score = vm.Rating;
+                    context.Ratings.Add(newRating);
+                }
+                else
+                {
+                    rating.Single().Rating_Score = vm.Rating;
+                }
+                context.SaveChanges();
+            }
+
+            return RedirectToAction("Show", new { name = vm.BeerName, tab = "details" });
+        }
+
         public ActionResult List(string sortby = "hoppin", int pageno = 0)
         {           
             using (var context = new Models.ModelsContext())
@@ -206,11 +231,20 @@ namespace Brew.Controllers
                 var recipeComments = from c in context.Comments where c.Recipe_Name == name select c.Timestamp;
                 var recipeModel = context.Recipes.Find(name);
 
+                int ratingScore = 0;
+                if (WebSecurity.IsAuthenticated)
+                {
+                    int userID = WebSecurity.GetUserId(User.Identity.Name);
+                    var rating = context.Ratings.Where(x => x.Recipe_Name == name && x.UserProfile_UserID == userID).Select(x => x);
+                    ratingScore = rating.Count() != 0 ? rating.FirstOrDefault().Rating_Score : 0;
+                }
+
                 if (recipeModel == null) return null;
 
                 //Todo: compute color using color formula from grains
                 var recipeViewModel = new DetailRecipeViewModel
                 {
+                    Rating = ratingScore,
                     AvgRating = System.Math.Round(Utilities.StatisticsUtils.GetLocalAvg(name),2),
                     BeerName = name,
                     Carbonation = recipeModel.Carbonation,
@@ -431,7 +465,7 @@ namespace Brew.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreateComment(CommentsRecipeViewModel vm, CommentViewModel cm)
+        public ActionResult CreateComment(CommentsRecipeViewModel vm)
         {
             using (var context = new ModelsContext())
             {
@@ -439,8 +473,8 @@ namespace Brew.Controllers
                 comment.Recipe_Name = vm.BeerName;
                 comment.Timestamp = DateTime.Today;
                 comment.UserProfile_UserID = WebSecurity.GetUserId(User.Identity.Name);
-                comment.Text = cm.Text;
-                comment.FlavorProfile_Name = cm.Flavor;
+                comment.Text = vm.Text;
+                comment.FlavorProfile_Name = vm.Flavor;
 
                 context.Comments.Add(comment);
                 context.SaveChanges();

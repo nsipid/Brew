@@ -52,6 +52,9 @@ namespace Brew.ViewModels.Recipes
         /// </summary>
         public FermentableViewModel FermentableToAdd { get; set; }
 
+        public int Rating { get; set; }
+        public int[] Ratings = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
         public DetailRecipeViewModel()
         {
             HopsUsed = new List<HopViewModel>();

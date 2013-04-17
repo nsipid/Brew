@@ -4,6 +4,32 @@
     <img height="300" width="300" src="@Url.Action("Index", "BeerImage", new { name = Model.BeerName })"/>
 </div>
 
+@if (Request.IsAuthenticated) {
+    using (Html.BeginForm("UpdateRating", "Recipes"))
+    {
+    
+        <fieldset>
+            <legend>Overview</legend>
+            <p>
+                @Html.DropDownListFor(
+                    m => m.Rating, 
+                    new SelectList(Model.Ratings),
+                    "-- Select Rating --"
+                )
+                @Html.HiddenFor(m => m.BeerName)
+            </p>           
+        <BR />
+        </fieldset>
+        <input type="submit" value="Submit Rating" />
+    }
+}
+else
+{
+    <BR />
+    <label>Log in to Rate</label>
+    <BR />
+}
+
 <section>
     <h1>Overview</h1>
     <dl>
