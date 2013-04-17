@@ -49,7 +49,7 @@ namespace Brew.Controllers
                             Color = 33, // TODO: Using fake color
                             Name = r.Name,
                             Style = r.Style == null ? "Unknown" : r.Style.StyleType_Name,
-                            User = r.Brewers.Count == 0 ? r.Brewers.FirstOrDefault().UserName : "Unknown",
+                            User = r.Brewers.Count == 0 ? "Unknown" : r.Brewers.FirstOrDefault().UserName,
                             OG = r.OG,
                             FG = r.FG,
                         }).ToList();
