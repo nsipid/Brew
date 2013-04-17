@@ -1,7 +1,14 @@
 ﻿@model Brew.ViewModels.Recipes.DetailRecipeViewModel
 
-@using (Html.BeginForm(Model.IsNewRecipe ? "Create" :"Update", "Recipes"))
+@using (Html.BeginForm(Model.IsNewRecipe ? "Create" :"Update", "Recipes", FormMethod.Post,new { enctype = "multipart/form-data" } ))
 {
+    <div>
+        <img height="300" width="300" src="@Url.Action("Index", "BeerImage", new { name = Model.BeerName })"/>
+    </div>
+    
+    <label for="file">Filename:</label>
+    <input type="file" name="File" id="File" />
+    
     @Html.HiddenFor(m => m.IsNewRecipe)
     <fieldset>
         <legend>Overview</legend>

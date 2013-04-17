@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Web;
 using Brew.ViewModels.Ingredients;
 using System.Collections.Generic;
 
@@ -6,6 +7,7 @@ namespace Brew.ViewModels.Recipes
 {
     public class DetailRecipeViewModel : RecipeViewModel
     {
+        public HttpPostedFileBase File { get; set; }
         public bool IsNewRecipe { get; set; }
         public string Style { get; set; }
 
