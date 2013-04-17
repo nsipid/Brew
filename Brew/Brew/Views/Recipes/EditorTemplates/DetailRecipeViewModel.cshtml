@@ -62,11 +62,23 @@
             @Html.TextBoxFor(m => m.Carbonation)
             @Html.ValidationMessageFor(m => m.Carbonation)
         </p>
-        <p>
-            @Html.LabelFor(m => m.Color)
-            @Html.TextBoxFor(m => m.Color)
-            @Html.ValidationMessageFor(m => m.Color)
-        </p>
+        @if (Model.IsNewRecipe)
+        {
+            <p>
+                @Html.LabelFor(m => m.Color)
+                @Html.TextBoxFor(m => m.Color)
+                @Html.ValidationMessageFor(m => m.Color)
+            </p>
+        }
+        else
+        {
+            <p>
+                @Html.LabelFor(m => m.Color)
+                @Html.DisplayFor(m => m.Color)
+                @Html.HiddenFor(m => m.Color)
+                @Html.ValidationMessageFor(m => m.Color)
+            </p>
+        }
     </fieldset>
 
     <section>
@@ -79,7 +91,7 @@
                     {
                         <li>
                             <span>
-                                @Model.HopsUsed[i].Name <input type ="submit" name="submission" value="Delete Hop @Model.HopsUsed[i].Name" />
+                                @Model.HopsUsed[i].Name <button type ="submit" name="submission" value="Delete Hop @Model.HopsUsed[i].Name">Delete</button>
                                 @Html.HiddenFor(m => Model.HopsUsed[i].Name)
                                 @Html.HiddenFor(m => Model.HopsUsed[i].Beta)  
                                 @Html.HiddenFor(m => Model.HopsUsed[i].Alpha)  
@@ -97,7 +109,7 @@
                 }
             </div>
             @Html.TextBoxFor(m=>m.HopToAdd.Name, "Add Hop", new {@id = "addHopSearch"})
-            <input type ="submit" name="submission" value="Add Hop" class="addItem" />
+            <button type ="submit" name="submission" value="Add Hop" class="addItem">Add</button>
             @Html.ActionLink("Create New Hop", "Create", "Ingredients", new {type = "hop"}, new {@class = "openNewHop", data_newHop_id = "newHopDialog", data_newHop_title = "New Hop"})
         </section>
         <section>
@@ -108,7 +120,7 @@
                     {
                         <li>
                             <span>
-                                @Model.FermentablesUsed[i].Name <input type ="submit" name="submission" value="Delete Fermentable @Model.FermentablesUsed[i].Name" />
+                                @Model.FermentablesUsed[i].Name <button type ="submit" name="submission" value="Delete Fermentable @Model.FermentablesUsed[i].Name">Delete</button>
                                 @Html.HiddenFor(m => Model.FermentablesUsed[i].Name)
                                 @Html.HiddenFor(m => Model.FermentablesUsed[i].Color)
                                 @Html.HiddenFor(m => Model.FermentablesUsed[i].CourseGrainYield)
@@ -124,7 +136,7 @@
                 }
             </div>
             @Html.TextBoxFor(m=>m.FermentableToAdd.Name, "Add Fermentable", new {@id = "addFermentableSearch"})
-            <input type ="submit" name="submission" value="Add Fermentable" class="addItem" />
+            <button type ="submit" name="submission" value="Add Fermentable" class="addItem">Add</button>
             @Html.ActionLink("Create New Fermentable", "Create", "Ingredients", new {type = "fermentable"}, new {@class = "openNewFermentable", data_newFermentable_id = "newFermentableDialog", data_newFermentable_title = "New Fermentable"})
         </section>
     </section>
@@ -185,7 +197,7 @@ if (Model.Mash != null)
                      <td>@Html.TextBoxFor(m => m.Mash.Steps[i].EndTempCel)</td>
                      <td>@Html.TextBoxFor(m => m.Mash.Steps[i].InfuseTempCel)</td>
                      <td>@Html.TextBoxFor(m => m.Mash.Steps[i].DecoctionAmount)</td>
-                     <td><input type ="submit" name="submission" value="Delete Mash Step @Model.Mash.Steps[i].UID" /></td>
+                     <td><button type ="submit" name="submission" value="Delete Mash Step @Model.Mash.Steps[i].UID">Delete</button></td>
                      <td style = "visibility:collapse" id ="@Html.Raw("sortId_" + i + "_Cell")">@Html.HiddenFor(m => m.Mash.Steps[i].SequenceNumber)</td>
                  </tr>
              }
@@ -195,13 +207,13 @@ if (Model.Mash != null)
          {
              @Html.HiddenFor(m => m.Mash.Steps[i].UID)
          }
-         <input type ="submit" name="submission" value="Add Mash Step" class="addItem" />
-         <input type ="submit" name="submission" value="Delete Mash Profile" class="addItem" />
+         <button type ="submit" name="submission" value="Add Mash Step" class="addItem">New Mash Step</button>
+         <button type ="submit" name="submission" value="Delete Mash Profile" class="addItem">Delete Mash Profile</button>
      </section>
  }
 else
 {
-  <input type ="submit" name="submission" value="Add Mash Profile" class="addItem" />
+  <button type ="submit" name="submission" value="Add Mash Profile" class="addItem">Add Mash Profile</button>
 }
     <fieldset>
         <legend>Community</legend>
