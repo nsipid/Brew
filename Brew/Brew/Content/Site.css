@@ -124,8 +124,9 @@ footer {
 /* site logo
 ----------------------------------------------------------*/
 .logo {
-    background: url("../Images/logo.png");
-    margin: 10px 5px 15px 20px;
+	display: block;
+    width: 360px;
+    height: 100px;
 }
 
 

@@ -14,21 +14,19 @@
         <header>
             <div class="content-wrapper">
                 <div class="float-left">
-                    @Html.ActionLink("Brew", "List", "Recipes", null, new { @class = "logo"})
+                    <div class="logo"><a><img class="logo" src="~/Images/hoppin.png"/></a></div>
                 </div>
                 <div class="float-right">
                     <section id="login">
                         @Html.Partial("_LoginPartial")
                     </section>
-                </div>
                 <nav>
                     <ul id="menu">
                         <li>@Html.ActionLink("Recipes",  "List", "Recipes")</li>
-                        <li>@Html.ActionLink("Styles", "List", "Styles")</li>
-                        <li>@Html.ActionLink("Users", "List", "Users")</li>
                         <li>@Html.ActionLink("Ingredients", "List", "Ingredients")</li>
                     </ul>
                 </nav>
+                </div>
             </div>
         </header>
         <div id="body">         

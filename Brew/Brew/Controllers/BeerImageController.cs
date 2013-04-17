@@ -25,7 +25,7 @@ namespace Brew.Controllers
                 }
             }
 
-            return new FilePathResult("/Images/heroAccent.png", "image/png");
+            return new FilePathResult("/Images/no_beer_pic.png", "image/png");
         }
     }
 }

@@ -62,23 +62,14 @@
             @Html.TextBoxFor(m => m.Carbonation)
             @Html.ValidationMessageFor(m => m.Carbonation)
         </p>
-        @if (Model.IsNewRecipe)
-        {
-            <p>
-                @Html.LabelFor(m => m.Color)
-                @Html.TextBoxFor(m => m.Color)
-                @Html.ValidationMessageFor(m => m.Color)
-            </p>
-        }
-        else
-        {
-            <p>
-                @Html.LabelFor(m => m.Color)
-                @Html.DisplayFor(m => m.Color)
-                @Html.HiddenFor(m => m.Color)
-                @Html.ValidationMessageFor(m => m.Color)
-            </p>
-        }
+
+        <p>
+            @Html.LabelFor(m => m.Color)
+            @Html.DisplayFor(m => m.Color)
+            @Html.HiddenFor(m => m.Color)
+            @Html.ValidationMessageFor(m => m.Color)
+        </p>
+        
     </fieldset>
 
     <section>
