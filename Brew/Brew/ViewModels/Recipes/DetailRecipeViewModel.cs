@@ -24,7 +24,7 @@ namespace Brew.ViewModels.Recipes
 
         public float Ibu { get; set; }
 
-        public float Color { get; set; }
+        public float Color { get { return (float)System.Math.Round(Utilities.BrewCharacteristicAlgs.CalculateColor(this.FermentablesUsed), 2); } }
 
         public MashProfileViewModel Mash { get; set; }
 

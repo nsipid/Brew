@@ -73,28 +73,30 @@ namespace Brew.Controllers
 
                 var random = new Random();
                 IOrderedEnumerable<RecipeListItemViewModel> recipes;
-                var allRecipes = context.Recipes.Include("Style").Include("Brewers").Select(r=>new RecipeListItemViewModel
-                        {
-                            
+
+                List<RecipeListItemViewModel> allRecipes = new List<RecipeListItemViewModel>();
+                foreach (var r in context.Recipes.Include("Style").Include("Brewers").Include("RecipeFermentables").ToList())
+                {
+                    var vm = new RecipeListItemViewModel
+                        {                       
                             Name = r.Name,
                             Style = r.Style == null ? "Unknown" : r.Style.StyleType_Name,
                             User = r.Brewers.Count == 0 ? "Unknown" : r.Brewers.FirstOrDefault().UserName,
                             OG = r.OG,
                             FG = r.FG,
-                        }).ToList();
+                        };
 
-                allRecipes.ForEach(r =>
-                    {
-                        double siteRating = 0;
-                        siteAverages.TryGetValue(r.Name, out siteRating);
+                    double siteRating = 0;
+                    siteAverages.TryGetValue(r.Name, out siteRating);
 
-                        double avgRating = 0;
-                        localAverages.TryGetValue(r.Name, out avgRating);
+                    double avgRating = 0;
+                    localAverages.TryGetValue(r.Name, out avgRating);
 
-                        r.Color = random.Next(1, 60);
-                        r.SiteRating = Math.Round(siteRating, 2);
-                        r.AvgRating = Math.Round(avgRating, 2);
-                    });
+                    vm.SiteRating = Math.Round(siteRating, 2);
+                    vm.AvgRating = Math.Round(avgRating, 2);
+                    vm.Color = Math.Round(Utilities.BrewCharacteristicAlgs.CalculateColor(GetFermentablesUsed(r) ?? new List<FermentableViewModel>()),2);
+                    allRecipes.Add(vm);
+                }
 
                 if (sortby == "hoppin")
                 {
@@ -219,7 +221,6 @@ namespace Brew.Controllers
                             Type = r.Hop.HopType_Name,
                             UsageTimeMin = TimeSpan.FromMinutes(r.Time)
                         }).ToList();
-            // TODO: IBU, Color, YourRating;
         }
 
         private static List<FermentableViewModel> GetFermentablesUsed(Recipe recipeModel)
@@ -266,13 +267,11 @@ namespace Brew.Controllers
                 double avgRating = 0;
                 localAverages.TryGetValue(name, out avgRating);
 
-                //Todo: compute color using color formula from grains
                 var recipeViewModel = new DetailRecipeViewModel
                 {
                     Rating = ratingScore,
                     AvgRating = Math.Round(avgRating, 2),
                     BeerName = name,
-                    Color = new Random().Next(1,60),
                     Carbonation = recipeModel.Carbonation,
                     Creators = recipeModel.Brewers.Select(b => b.UserName).ToList(),
                     FinalGravity = recipeModel.FG,
