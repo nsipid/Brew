@@ -474,7 +474,7 @@ namespace Brew.Controllers
             {
                 Models.Comment comment = new Comment();
                 comment.Recipe_Name = vm.BeerName;
-                comment.Timestamp = DateTime.Today;
+                comment.Timestamp = DateTime.Now;
                 comment.UserProfile_UserID = WebSecurity.GetUserId(User.Identity.Name);
                 comment.Text = vm.Text;
                 comment.FlavorProfile_Name = vm.Flavor;
