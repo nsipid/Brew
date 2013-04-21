@@ -7,90 +7,38 @@ namespace Brew.Utilities
 {
     public class StatisticsUtils
     {
-        public static double GetLocalAvg(string strBeerName)
-        {
-            long lRecipeRatingsCount;
-            double dRecipeRatingsSum;
-            double dRecipeRatingsAvg;
-            using (var context = new Models.ModelsContext())
-            {
-                GetRecipeRatingsSimpleStats(strBeerName,
-                                            out lRecipeRatingsCount,
-                                            out dRecipeRatingsSum,
-                                            out dRecipeRatingsAvg);
-            }
-            return dRecipeRatingsAvg;
-        }
-
-        public static double GetSiteAvg(string strBeerName)
-        {
-            Dictionary<string, long> oFlavorCounts = new Dictionary<string, long>();
-            using (var context = new Models.ModelsContext())
-            {
-                //determine sitewide average of ratings for all recipes
-                var vRecipes = from r in context.Recipes
-                               select r.Name;
-
-                //get sitewide average (prior mean)
-                double dRecipesAvgRatingsSum = 0;
-                long lRecipeRatingsCount;
-                double dRecipeRatingsSum;
-                double dRecipeRatingsAvg;
-                foreach (var vRecipeName in vRecipes)
-                {
-                    GetRecipeRatingsSimpleStats((string)vRecipeName,
-                                                out lRecipeRatingsCount,
-                                                out dRecipeRatingsSum,
-                                                out dRecipeRatingsAvg);
-
-                    dRecipesAvgRatingsSum += dRecipeRatingsAvg;
-                }
-                double dRecipesAvgRating = dRecipesAvgRatingsSum / vRecipes.Count();
-
-                //get local mean and sum of ratings for this recipe
-                GetRecipeRatingsSimpleStats(strBeerName,
-                                            out lRecipeRatingsCount,
-                                            out dRecipeRatingsSum,
-                                            out dRecipeRatingsAvg);
-
-                //determine an appropriate constant value for Bayesian average
-                double dPropConstant = 10; //just use 10 for now, tweak if necessary
-
-                //return Bayesian average using derived parameters
-                return GetBayesianAvg(dRecipesAvgRating, dRecipeRatingsSum, dPropConstant, lRecipeRatingsCount);
-            }
-        }
-
-        /// <summary>
-        /// Returns simple statistics about the Ratings associated with the supplied Recipe name.
-        /// </summary>
-        /// <param name="strRecipeName"></param>
-        /// <param name="lRatingsCount"></param>
-        /// <param name="dRatingsSum"></param>
-        /// <param name="dAvgRating"></param>
-        public static void GetRecipeRatingsSimpleStats(string strRecipeName, 
-                                                       out long lRatingsCount, 
-                                                       out double dRatingsSum, 
-                                                       out double dAvgRating)
+        public static Dictionary<string, double> GetLocalAvg()
         {
             using (var context = new Models.ModelsContext())
             {
                 //retrieve table of all ratings scores for this recipe
                 var vRatingScores = from r in context.Ratings
-                                    where r.Recipe_Name == strRecipeName
-                                    select r.Rating_Score;
+                                    group r by r.Recipe_Name into g
+                                    select new { Name = g.Key, RatingSum = g.Sum(s => s.Rating_Score), Count = g.Count(), RatingAverage = g.Average(s => s.Rating_Score) };
 
-                //determine sum of individual ratings for this recipe
-                dRatingsSum = 0;
-                foreach (var vRatingScore in vRatingScores)
-                    dRatingsSum += (double)vRatingScore;
+                return vRatingScores.ToList().ToDictionary(g => g.Name, g => g.RatingAverage);
+            }
+        }
 
-                //set other out variables for return
-                lRatingsCount = vRatingScores.Count();
-                if (lRatingsCount == 0)
-                    dAvgRating = 0;
-                else
-                    dAvgRating = dRatingsSum / lRatingsCount;
+        public static Dictionary<string, double> GetSiteAvg()
+        {
+            Dictionary<string, long> oFlavorCounts = new Dictionary<string, long>();
+            using (var context = new Models.ModelsContext())
+            {
+                //retrieve table of all ratings scores for this recipe
+                var vRatingScores = from r in context.Ratings
+                                    group r by r.Recipe_Name into g
+                                    select new { Name = g.Key, RatingSum = g.Sum(s => s.Rating_Score), Count = g.Count(), RatingAverage = g.Average(s=>s.Rating_Score) };
+
+                double dRecipesAvgRatingsSum = vRatingScores.Sum(s => s.RatingAverage);
+
+                double dRecipesAvgRating = dRecipesAvgRatingsSum / vRatingScores.Count();
+
+                //determine an appropriate constant value for Bayesian average
+                double dPropConstant = 10; //just use 10 for now, tweak if necessary
+
+                //return Bayesian average using derived parameters
+                return vRatingScores.ToList().ToDictionary(g => g.Name, g => GetBayesianAvg(dRecipesAvgRating, g.RatingSum, dPropConstant, vRatingScores.Count()));  
             }
         }
 

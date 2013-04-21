@@ -68,6 +68,9 @@ namespace Brew.Controllers
         {           
             using (var context = new Models.ModelsContext())
             {
+                var siteAverages = Utilities.StatisticsUtils.GetSiteAvg();
+                var localAverages = Utilities.StatisticsUtils.GetLocalAvg();
+
                 var random = new Random();
                 IOrderedEnumerable<RecipeListItemViewModel> recipes;
                 var allRecipes = context.Recipes.Include("Style").Include("Brewers").Select(r=>new RecipeListItemViewModel
@@ -82,9 +85,15 @@ namespace Brew.Controllers
 
                 allRecipes.ForEach(r =>
                     {
+                        double siteRating = 0;
+                        siteAverages.TryGetValue(r.Name, out siteRating);
+
+                        double avgRating = 0;
+                        localAverages.TryGetValue(r.Name, out avgRating);
+
                         r.Color = random.Next(1, 60);
-                        r.SiteRating = Math.Round(Utilities.StatisticsUtils.GetSiteAvg(r.Name));
-                        r.AvgRating = Math.Round(Utilities.StatisticsUtils.GetLocalAvg(r.Name));
+                        r.SiteRating = Math.Round(siteRating, 2);
+                        r.AvgRating = Math.Round(avgRating, 2);
                     });
 
                 if (sortby == "hoppin")
@@ -101,11 +110,7 @@ namespace Brew.Controllers
                 }
 
                 var recipePage = new PagedList<RecipeListItemViewModel>(recipes, pageno);
-                recipePage.CurrentPage.ForEach(p =>
-                    { 
-                        p.AvgRating = System.Math.Round(Utilities.StatisticsUtils.GetLocalAvg(p.Name));
-                        p.SiteRating = System.Math.Round(Utilities.StatisticsUtils.GetLocalAvg(p.Name));
-                    });
+
                 var viewModel = new RecipeListViewModel 
                     {
                         Beers = recipePage,
@@ -124,11 +129,20 @@ namespace Brew.Controllers
                 var recipeComments = from c in context.Comments where c.Recipe_Name == name select c.Timestamp;
                 var recipeModel = context.Recipes.Find(name);
 
+                var siteAverages = Utilities.StatisticsUtils.GetSiteAvg();
+                var localAverages = Utilities.StatisticsUtils.GetLocalAvg();
+
+                double siteRating = 0;
+                siteAverages.TryGetValue(name, out siteRating);
+
+                double avgRating = 0;
+                localAverages.TryGetValue(name, out avgRating);
+
                 CommentsRecipeViewModel viewModel = new CommentsRecipeViewModel
                 {
                     BeerName = recipeModel.Name,
-                    AvgRating = System.Math.Round(Utilities.StatisticsUtils.GetLocalAvg(name), 2),
-                    SiteRating = System.Math.Round(Utilities.StatisticsUtils.GetSiteAvg(name), 2),
+                    AvgRating = Math.Round(avgRating, 2),
+                    SiteRating = Math.Round(siteRating, 2),
                     FlavorCounts = flavorCounts.ToDictionary(g => g.Key, g => g.Count),
                     CommentsCount = recipeComments.Count()                    
                 };
@@ -229,6 +243,9 @@ namespace Brew.Controllers
         {
             using (var context = new Models.ModelsContext())
             {
+                var siteAverages = Utilities.StatisticsUtils.GetSiteAvg();
+                var localAverages = Utilities.StatisticsUtils.GetLocalAvg();
+
                 var flavorCounts = from c in context.Comments where c.Recipe_Name == name group c by c.FlavorProfile.Name into g select new { Key = g.Key, Count = g.LongCount() };
                 var recipeComments = from c in context.Comments where c.Recipe_Name == name select c.Timestamp;
                 var recipeModel = context.Recipes.Find(name);
@@ -243,11 +260,17 @@ namespace Brew.Controllers
 
                 if (recipeModel == null) return null;
 
+                double siteRating = 0;
+                siteAverages.TryGetValue(name, out siteRating);
+
+                double avgRating = 0;
+                localAverages.TryGetValue(name, out avgRating);
+
                 //Todo: compute color using color formula from grains
                 var recipeViewModel = new DetailRecipeViewModel
                 {
                     Rating = ratingScore,
-                    AvgRating = System.Math.Round(Utilities.StatisticsUtils.GetLocalAvg(name),2),
+                    AvgRating = Math.Round(avgRating, 2),
                     BeerName = name,
                     Color = new Random().Next(1,60),
                     Carbonation = recipeModel.Carbonation,
@@ -256,7 +279,7 @@ namespace Brew.Controllers
                     OriginalGravity = recipeModel.OG,
                     PostedDate = recipeModel.Date,
                     RecipeType = recipeModel.RecipieType_Name,
-                    SiteRating = System.Math.Round(Utilities.StatisticsUtils.GetSiteAvg(name),2),
+                    SiteRating = Math.Round(siteRating, 2),
                     Style = recipeModel.Style == null ? "Unknown" : recipeModel.Style.StyleType_Name,
                     FlavorCounts = flavorCounts.ToDictionary(g => g.Key, g => g.Count),
                     CommentsCount = recipeComments.Count(),
