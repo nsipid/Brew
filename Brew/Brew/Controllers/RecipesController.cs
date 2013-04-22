@@ -19,7 +19,15 @@ namespace Brew.Controllers
     {
         public ActionResult Create()
         {
-            return View(new DetailRecipeViewModel{IsNewRecipe = true});
+            using (var context = new Models.ModelsContext())
+            {
+                var styles =
+                    ((from s in context.Styles select new SelectListItem {Text = s.Name, Value = s.Name}).ToList());
+                var types =
+                    ((from s in context.RecipieTypes select new SelectListItem {Text = s.Name, Value = s.Name}).ToList());
+
+                return View(new DetailRecipeViewModel { IsNewRecipe = true, Styles = styles, RecipeTypes = types, Style = styles.FirstOrDefault().Value, RecipeType = types.FirstOrDefault().Value });
+            }       
         }
 
         [HttpPost]
@@ -252,7 +260,11 @@ namespace Brew.Controllers
 
                 var flavorCounts = from c in context.Comments where c.Recipe_Name == name group c by c.FlavorProfile.Name into g select new { Key = g.Key, Count = g.LongCount() };
                 var recipeComments = from c in context.Comments where c.Recipe_Name == name select c.Timestamp;
-                var recipeModel = context.Recipes.Find(name);
+                var recipeModel = context.Recipes.Include("Style").Include("RecipieType").Where(r => r.Name == name).FirstOrDefault();
+                var styles = ((from s in context.Styles select new SelectListItem { Text = s.Name, Value = s.Name }).ToList());
+                var types = ((from s in context.RecipieTypes select new SelectListItem { Text = s.Name, Value = s.Name }).ToList());
+                var styleModel = recipeModel.Style;
+                var typeModel = recipeModel.RecipieType;
 
                 int ratingScore = 0;
                 if (WebSecurity.IsAuthenticated)
@@ -270,6 +282,9 @@ namespace Brew.Controllers
                 double avgRating = 0;
                 localAverages.TryGetValue(name, out avgRating);
 
+                var styleString = styleModel == null ? context.Styles.FirstOrDefault().Name : styleModel.Name;
+                var typeString = typeModel == null ? context.RecipieTypes.FirstOrDefault().Name : typeModel.Name;
+
                 var recipeViewModel = new DetailRecipeViewModel
                 {
                     Rating = ratingScore,
@@ -280,9 +295,7 @@ namespace Brew.Controllers
                     FinalGravity = recipeModel.FG,
                     OriginalGravity = recipeModel.OG,
                     PostedDate = recipeModel.Date,
-                    RecipeType = recipeModel.RecipieType_Name,
                     SiteRating = Math.Round(siteRating, 2),
-                    Style = recipeModel.Style == null ? "Unknown" : recipeModel.Style.StyleType_Name,
                     FlavorCounts = flavorCounts.ToDictionary(g => g.Key, g => g.Count),
                     CommentsCount = recipeComments.Count(),
                     FermentablesUsed = GetFermentablesUsed(recipeModel),
@@ -290,7 +303,11 @@ namespace Brew.Controllers
                     RemovedHops = new List<string>(),
                     HopsUsed = GetHopsUsed(recipeModel),
                     HopToAdd = new HopViewModel(),
-                    FermentableToAdd = new FermentableViewModel()
+                    FermentableToAdd = new FermentableViewModel(),
+                    Styles = styles,
+                    RecipeTypes = types,
+                    Style = styleString,
+                    RecipeType = typeString
                 };
 
                 if (recipeModel.Mash != null)
@@ -540,14 +557,24 @@ namespace Brew.Controllers
                                       ? context.Recipes.Find(vm.BeerName)
                                       : new Recipe() {Name = vm.BeerName, Date = DateTime.Now};
 
+                    var styles = ((from s in context.Styles select new SelectListItem {Text = s.Name, Value = s.Name}).ToList());
+                    var types =  ((from s in context.RecipieTypes select new SelectListItem { Text = s.Name, Value = s.Name }).ToList());
+
                     vm.HopsUsed = vm.HopsUsed ?? GetHopsUsed(recipeModel);
                     vm.FermentablesUsed = vm.FermentablesUsed ?? GetFermentablesUsed(recipeModel);
                     vm.RemovedHops = vm.RemovedHops ?? new List<string>();
                     vm.RemovedFermentables = vm.RemovedFermentables ?? new List<string>();
                     vm.PostedDate = isNewRecipe ? DateTime.Now : recipeModel.Date;
+                    vm.Styles = styles;
+                    vm.RecipeTypes = types;
+
+                    var styleModel = context.Styles.Find(vm.Style);
+                    var typeModel = context.RecipieTypes.Find(vm.RecipeType);
 
                     if (ModelState.IsValid && submission == "Apply")
                     {
+                        recipeModel.Style_Name = styleModel.Name ?? context.Styles.FirstOrDefault().Name;
+                        recipeModel.RecipieType_Name = typeModel.Name ?? context.RecipieTypes.FirstOrDefault().Name;
                         recipeModel.Carbonation = vm.Carbonation;
                         recipeModel.FG = vm.FinalGravity;
                         recipeModel.OG = vm.OriginalGravity;

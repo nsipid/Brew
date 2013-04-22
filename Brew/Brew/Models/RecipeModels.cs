@@ -72,6 +72,9 @@ namespace Brew.Models
         [ForeignKey("RecipieType")]
         public string RecipieType_Name { get; set; }
 
+        [ForeignKey("Style")]
+        public string Style_Name { get; set; }
+
         public Recipe()
         {
             RecipeFermentables = new HashSet<RecipeFermentable>();

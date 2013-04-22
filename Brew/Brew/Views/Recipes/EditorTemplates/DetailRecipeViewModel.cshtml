@@ -33,12 +33,12 @@
         }
         <p>
             @Html.LabelFor(m => m.Style)
-            @Html.TextBoxFor(m => m.Style)
+            @Html.DropDownListFor(m => m.Style, Model.Styles)
             @Html.ValidationMessageFor(m => m.Style)
         </p>
         <p>
             @Html.LabelFor(m => m.RecipeType)
-            @Html.TextBoxFor(m => m.RecipeType)
+            @Html.DropDownListFor(m => m.RecipeType, Model.RecipeTypes)
             @Html.ValidationMessageFor(m => m.RecipeType)
         </p>
         <p>

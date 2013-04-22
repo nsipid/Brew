@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Web;
+using System.Web.Mvc;
 using Brew.ViewModels.Ingredients;
 using System.Collections.Generic;
 
@@ -62,5 +63,9 @@ namespace Brew.ViewModels.Recipes
             RemovedFermentables = new List<string>();
             RemovedHops = new List<string>();
         }
+
+        public List<SelectListItem> Styles { get; set; }
+
+        public List<SelectListItem> RecipeTypes { get; set; }
     }
 }
