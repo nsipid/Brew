@@ -1067,4 +1067,11 @@
 </canvas>
 
 @Html.DisplayForModel()
-@Html.ActionLink("Edit", "Update", new { name = Model.BeerName }, null)
+
+@if (Request.IsAuthenticated)
+{
+    if (Model.Creators == null || Model.Creators.Contains(User.Identity.Name))
+    {
+        @Html.ActionLink("Edit", "Update", new {name = Model.BeerName}, null)
+    }
+}

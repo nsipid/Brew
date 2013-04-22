@@ -5,9 +5,11 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Brew.Filters;
 
 namespace Brew.Controllers
 {
+    [InitializeSimpleMembership]
     public class BeerImageController : Controller
     {
         // GET: /BeerImage/

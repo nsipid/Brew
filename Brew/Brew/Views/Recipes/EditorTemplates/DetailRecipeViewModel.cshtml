@@ -18,6 +18,7 @@
                 @Html.LabelFor(m => m.BeerName)
                 @Html.TextBoxFor(m => m.BeerName)
                 @Html.ValidationMessageFor(m => m.BeerName)
+                @Html.HiddenFor(m => m.PostedDate)
             </p>
         }
         else
@@ -27,6 +28,7 @@
                 @Html.DisplayFor(m => m.BeerName)
                 @Html.HiddenFor(m => m.BeerName)
                 @Html.ValidationMessageFor(m => m.BeerName)
+                @Html.HiddenFor(m => m.PostedDate)
             </p>
         }
         <p>
@@ -138,8 +140,6 @@ if (Model.Mash != null)
      <section>
          <h1>Mash</h1>
          <dl>
-             <dt>@Html.LabelFor(m => m.Mash.Name)</dt>
-             <dd>@Html.DisplayFor(m => m.Mash.Name)</dd>
              <dt>@Html.LabelFor(m => m.Mash.GrainTemp)</dt>
              <dd>@Html.TextBoxFor(m => m.Mash.GrainTemp)</dd>
              <dt>@Html.LabelFor(m => m.Mash.TunTemp)</dt>

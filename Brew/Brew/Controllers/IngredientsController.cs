@@ -1,4 +1,5 @@
-﻿using Brew.Models;
+﻿using Brew.Filters;
+using Brew.Models;
 using Brew.ViewModels.Ingredients;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Web.Mvc;
 
 namespace Brew.Controllers
 {
+    [InitializeSimpleMembership]
     public class IngredientsController : Controller
     {
         public ActionResult Create(string type = "hop")
@@ -26,25 +28,32 @@ namespace Brew.Controllers
         [HttpPost]
         public ActionResult CreateFermentable(FermentableViewModel vm)
         {
-            using (var context = new Models.ModelsContext())
+            try
             {
-                Fermentable newFermentable = new Fermentable();
-                newFermentable.CoarseFineDiff = (float) (vm.CourseGrainYield - vm.Yield);
-                newFermentable.Color = vm.Color;
-                newFermentable.DiastaticPower = (float) vm.DiastaticPower;
-                newFermentable.Name = vm.Name;
-                newFermentable.Yield = (float) vm.Yield;
-
-                context.Fermentables.Add(newFermentable);
-                context.SaveChanges();
-                if (Request.IsAjaxRequest())
+                using (var context = new Models.ModelsContext())
                 {
-                    return PartialView("~/Views/Ingredients/DisplayTemplates/FermentableViewModel.cshtml", vm);                   
+                    Fermentable newFermentable = new Fermentable();
+                    newFermentable.CoarseFineDiff = (float) (vm.CourseGrainYield - vm.Yield);
+                    newFermentable.Color = vm.Color;
+                    newFermentable.DiastaticPower = (float) vm.DiastaticPower;
+                    newFermentable.Name = vm.Name;
+                    newFermentable.Yield = (float) vm.Yield;
+                    newFermentable.IBUs = (float) vm.IBU;
+                    context.Fermentables.Add(newFermentable);
+                    context.SaveChanges();
+                    if (Request.IsAjaxRequest())
+                    {
+                        return PartialView("~/Views/Ingredients/DisplayTemplates/FermentableViewModel.cshtml", vm);
+                    }
+                    else
+                    {
+                        return RedirectToAction("Show", new {name = vm.Name, type = "fermentable"});
+                    }
                 }
-                else
-                {
-                    return RedirectToAction("Show", new { name = vm.Name, type = "fermentable" });
-                }
+            }
+            catch (Exception e)
+            {
+                return PartialView("~/Views/Ingredients/EditorTemplates/HopViewModel.cshtml", vm);
             }
         }
 
@@ -53,25 +62,32 @@ namespace Brew.Controllers
         {
             using (var context = new Models.ModelsContext())
             {
-                Hop newHop = new Hop();
-
-                newHop.Name = vm.Name;
-                newHop.Alpha = (float) vm.Alpha;
-                newHop.Beta = (float) vm.Beta;
-                newHop.Caryophyllene = (float) vm.PercentCaryophyllene;
-                newHop.Cohumulone = (float) vm.PercentCohumulone;
-                newHop.HSI = (float) vm.Stability;
-                newHop.Humulene = (float) vm.PercentHumulene;
-
-                context.Hops.Add(newHop);
-                context.SaveChanges();
-                if (Request.IsAjaxRequest())
+                try
                 {
-                    return PartialView("~/Views/Ingredients/DisplayTemplates/HopViewModel.cshtml", vm);
+                    Hop newHop = new Hop();
+
+                    newHop.Name = vm.Name;
+                    newHop.Alpha = (float) vm.Alpha;
+                    newHop.Beta = (float) vm.Beta;
+                    newHop.Caryophyllene = (float) vm.PercentCaryophyllene;
+                    newHop.Cohumulone = (float) vm.PercentCohumulone;
+                    newHop.HSI = (float) vm.Stability;
+                    newHop.Humulene = (float) vm.PercentHumulene;
+
+                    context.Hops.Add(newHop);
+                    context.SaveChanges();
+                    if (Request.IsAjaxRequest())
+                    {
+                        return PartialView("~/Views/Ingredients/DisplayTemplates/HopViewModel.cshtml", vm);
+                    }
+                    else
+                    {
+                        return RedirectToAction("Show", new {name = vm.Name, type = "hop"});
+                    }
                 }
-                else
+                catch (Exception e)
                 {
-                    return RedirectToAction("Show", new { name = vm.Name, type = "hop" });
+                    return PartialView("~/Views/Ingredients/EditorTemplates/HopViewModel.cshtml", vm);
                 }
             }
         }
@@ -152,7 +168,8 @@ namespace Brew.Controllers
                             DiastaticPower = fermentableModel.DiastaticPower,
                             CourseGrainYield = fermentableModel.Yield + fermentableModel.CoarseFineDiff,
                             Name = fermentableModel.Name,
-                            Yield = fermentableModel.Yield
+                            Yield = fermentableModel.Yield,
+                            IBU = fermentableModel.IBUs,
                         };
 
                     return View(fermentableViewModel);
